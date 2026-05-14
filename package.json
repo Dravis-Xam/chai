@@ -1,0 +1,21 @@
+{
+  "name": "chai",
+  "version": "1.0.0",
+  "description": "An e-com app for retailing tea",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Dravis-Xam/chai.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/Dravis-Xam/chai/issues"
+  },
+  "homepage": "https://github.com/Dravis-Xam/chai#readme"
+}
