@@ -1,0 +1,32 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Custom theme configuration */
+:root {
+  --color-chai-50: #fef7ee;
+  --color-chai-100: #fdedd3;
+  --color-chai-200: #fad7a5;
+  --color-chai-300: #f6ba6d;
+  --color-chai-400: #f19432;
+  --color-chai-500: #ee7a10;
+  --color-chai-600: #df6006;
+  --color-chai-700: #b94908;
+  --color-chai-800: #933a0d;
+  --color-chai-900: #77310e;
+  --color-chai-950: #401705;
+
+  --animate-fadeIn: fadeIn 0.2s ease-out;
+}
+
+/* Custom keyframes */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
