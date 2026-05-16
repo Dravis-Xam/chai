@@ -1,10 +1,13 @@
 import Homepage from "./home";
+import { ThemeProvider } from "./hooks/ThemeContext";
 
 function App() {
   return (
-    <div className="App">
-      <Homepage />
-    </div>
+    <ThemeProvider>
+      <div className="App">
+        <Homepage />
+      </div>
+    </ThemeProvider>
   );
 }
 
