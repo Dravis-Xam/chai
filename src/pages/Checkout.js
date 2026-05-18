@@ -1,0 +1,376 @@
+import React, { useMemo, useState } from 'react'
+import { useNavigate } from 'react-router'
+import Header from '../components/header'
+import Footer from '../components/footer'
+import CartPanel from '../components/panels/CartPanel'
+
+const pickupPoints = [
+  { id: 1, label: 'Chai Central', city: 'Nairobi', street: 'Moi Ave', location: 'Downtown', description: 'Corner of Moi Ave and Kenyatta Avenue.' },
+  { id: 2, label: 'Tea Terrace', city: 'Nairobi', street: 'University Way', location: 'CBD', description: 'Next to the central library stop.' },
+  { id: 3, label: 'Kilimani Kiosk', city: 'Nairobi', street: 'Hatheru Rd', location: 'Kilimani', description: 'Inside the Kilimani shopping precinct.' },
+  { id: 4, label: 'Mombasa Road Hub', city: 'Nairobi', street: 'Mombasa Rd', location: 'Embakasi', description: 'Across from the petrol station.' },
+  { id: 5, label: 'Westlands Pantry', city: 'Nairobi', street: 'Chiromo Rd', location: 'Westlands', description: 'Beside the bookstore.' },
+]
+
+const paymentMethods = [
+  { id: 'mpesa', label: 'M-Pesa', type: 'phone' },
+  { id: 'airtelmoney', label: 'Airtel Money', type: 'phone' },
+  { id: 'paypal', label: 'PayPal', type: 'email' },
+  { id: 'stripe', label: 'Stripe', type: 'email' },
+  { id: 'creditcard', label: 'Credit Card', type: 'card' },
+]
+
+function DeliveryTab({ data, setData, availablePoints }) {
+  return (
+    <div className="space-y-6">
+      <div className="grid gap-4 lg:grid-cols-2">
+        <label className="space-y-2 text-sm text-gray-700 dark:text-gray-300">
+          Location
+          <input
+            value={data.location}
+            onChange={(event) => setData({ ...data, location: event.target.value })}
+            placeholder="Location / neighborhood"
+            className="w-full rounded-3xl border border-gray-200 bg-white px-4 py-3 text-sm text-gray-900 outline-none transition focus:border-amber-500 focus:ring-2 focus:ring-amber-200 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100"
+          />
+        </label>
+        <label className="space-y-2 text-sm text-gray-700 dark:text-gray-300">
+          City / Town
+          <input
+            value={data.cityTown}
+            onChange={(event) => setData({ ...data, cityTown: event.target.value })}
+            placeholder="Nairobi"
+            className="w-full rounded-3xl border border-gray-200 bg-white px-4 py-3 text-sm text-gray-900 outline-none transition focus:border-amber-500 focus:ring-2 focus:ring-amber-200 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100"
+          />
+        </label>
+      </div>
+
+      <div className="grid gap-4 lg:grid-cols-2">
+        <label className="space-y-2 text-sm text-gray-700 dark:text-gray-300">
+          Street
+          <input
+            value={data.street}
+            onChange={(event) => setData({ ...data, street: event.target.value })}
+            placeholder="Street name"
+            className="w-full rounded-3xl border border-gray-200 bg-white px-4 py-3 text-sm text-gray-900 outline-none transition focus:border-amber-500 focus:ring-2 focus:ring-amber-200 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100"
+          />
+        </label>
+        <label className="space-y-2 text-sm text-gray-700 dark:text-gray-300">
+          Contact phone
+          <input
+            value={data.contact}
+            onChange={(event) => setData({ ...data, contact: event.target.value })}
+            placeholder="Phone number"
+            className="w-full rounded-3xl border border-gray-200 bg-white px-4 py-3 text-sm text-gray-900 outline-none transition focus:border-amber-500 focus:ring-2 focus:ring-amber-200 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100"
+          />
+        </label>
+      </div>
+
+      <div className="rounded-3xl border border-gray-200 bg-gray-50 p-5 dark:border-gray-800 dark:bg-gray-900/70">
+        <div className="mb-4 flex items-center justify-between">
+          <div>
+            <p className="text-sm font-semibold text-gray-900 dark:text-white">Pickup point lookup</p>
+            <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">Available locations around the chosen city and street.</p>
+          </div>
+          <div className="rounded-full bg-amber-100 px-3 py-1 text-xs font-semibold text-amber-700 dark:bg-amber-900/40 dark:text-amber-300">
+            Map view
+          </div>
+        </div>
+
+        <div className="grid gap-4 lg:grid-cols-2">
+          <div className="h-52 rounded-3xl border border-dashed border-gray-300 bg-white p-4 text-sm text-gray-500 dark:border-gray-800 dark:bg-gray-950 dark:text-gray-400">
+            <div className="mb-3 text-sm font-semibold text-gray-900 dark:text-white">Map preview</div>
+            <div className="relative h-full overflow-hidden rounded-2xl bg-gradient-to-br from-amber-50 to-orange-100 dark:from-gray-800 dark:to-gray-900">
+              <div className="absolute left-6 top-6 h-10 w-10 rounded-2xl bg-amber-500/15 text-center leading-10 text-xs font-semibold text-amber-700">A</div>
+              <div className="absolute right-8 top-16 h-10 w-10 rounded-2xl bg-amber-500/15 text-center leading-10 text-xs font-semibold text-amber-700">B</div>
+              <div className="absolute left-14 bottom-12 h-10 w-10 rounded-2xl bg-amber-500/15 text-center leading-10 text-xs font-semibold text-amber-700">C</div>
+              <div className="absolute inset-x-8 bottom-8 h-24 rounded-3xl border border-dashed border-amber-300/60" />
+            </div>
+          </div>
+
+          <div className="space-y-4">
+            {availablePoints.length === 0 ? (
+              <div className="rounded-3xl border border-dashed border-gray-300 bg-white p-4 text-sm text-gray-500 dark:border-gray-800 dark:bg-gray-950 dark:text-gray-400">
+                No pickup points were found for this location yet. Try broadening your city or street.
+              </div>
+            ) : (
+              availablePoints.map((point) => (
+                <div key={point.id} className="rounded-3xl border border-gray-200 bg-white p-4 shadow-sm dark:border-gray-800 dark:bg-gray-950">
+                  <p className="font-semibold text-gray-900 dark:text-white">{point.label}</p>
+                  <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">{point.description}</p>
+                  <p className="mt-3 text-xs uppercase tracking-[0.18em] text-amber-600 dark:text-amber-300">{point.city} · {point.street}</p>
+                </div>
+              ))
+            )}
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+function PaymentTab({ data, setData, selectedMethod, setSelectedMethod, openPaymentQr, setCheckoutStatus }) {
+  const method = paymentMethods.find((item) => item.id === selectedMethod) || paymentMethods[0]
+
+  const handleSubmit = (event) => {
+    event.preventDefault()
+    if (method.type === 'phone' && !data.paymentPhone) {
+      setCheckoutStatus('failed')
+      return
+    }
+    if (method.type === 'email' && !data.paymentEmail) {
+      setCheckoutStatus('failed')
+      return
+    }
+    if (method.type === 'card' && (!data.cardNumber || !data.cardName || !data.cardExpiry || !data.cardCvc)) {
+      setCheckoutStatus('failed')
+      return
+    }
+    setCheckoutStatus('success')
+  }
+
+  return (
+    <form onSubmit={handleSubmit} className="space-y-6">
+      <div className="grid gap-4 lg:grid-cols-2">
+        {paymentMethods.map((option) => (
+          <label key={option.id} className={`flex cursor-pointer select-none items-center gap-3 rounded-3xl border p-4 transition ${selectedMethod === option.id ? 'border-amber-500 bg-amber-50/70 dark:border-amber-500 dark:bg-amber-500/10' : 'border-gray-200 bg-white dark:border-gray-800 dark:bg-gray-950'}`}>
+            <input
+              type="radio"
+              name="paymentMethod"
+              value={option.id}
+              checked={selectedMethod === option.id}
+              onChange={() => setSelectedMethod(option.id)}
+              className="h-4 w-4 text-amber-500 accent-amber-500"
+            />
+            <span className="text-sm font-medium text-gray-900 dark:text-white">{option.label}</span>
+          </label>
+        ))}
+      </div>
+
+      {method.type === 'phone' && (
+        <label className="space-y-2 text-sm text-gray-700 dark:text-gray-300">
+          Phone number
+          <input
+            value={data.paymentPhone}
+            onChange={(event) => setData({ ...data, paymentPhone: event.target.value })}
+            placeholder="07XX XXX XXX"
+            className="w-full rounded-3xl border border-gray-200 bg-white px-4 py-3 text-sm text-gray-900 outline-none transition focus:border-amber-500 focus:ring-2 focus:ring-amber-200 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100"
+          />
+        </label>
+      )}
+
+      {method.type === 'email' && (
+        <label className="space-y-2 text-sm text-gray-700 dark:text-gray-300">
+          Email
+          <input
+            value={data.paymentEmail}
+            onChange={(event) => setData({ ...data, paymentEmail: event.target.value })}
+            placeholder="you@example.com"
+            className="w-full rounded-3xl border border-gray-200 bg-white px-4 py-3 text-sm text-gray-900 outline-none transition focus:border-amber-500 focus:ring-2 focus:ring-amber-200 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100"
+          />
+        </label>
+      )}
+
+      {method.type === 'card' && (
+        <div className="grid gap-4">
+          <label className="space-y-2 text-sm text-gray-700 dark:text-gray-300">
+            Cardholder name
+            <input
+              value={data.cardName}
+              onChange={(event) => setData({ ...data, cardName: event.target.value })}
+              placeholder="Name on card"
+              className="w-full rounded-3xl border border-gray-200 bg-white px-4 py-3 text-sm text-gray-900 outline-none transition focus:border-amber-500 focus:ring-2 focus:ring-amber-200 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100"
+            />
+          </label>
+          <label className="space-y-2 text-sm text-gray-700 dark:text-gray-300">
+            Card number
+            <input
+              value={data.cardNumber}
+              onChange={(event) => setData({ ...data, cardNumber: event.target.value })}
+              placeholder="1234 5678 9012 3456"
+              className="w-full rounded-3xl border border-gray-200 bg-white px-4 py-3 text-sm text-gray-900 outline-none transition focus:border-amber-500 focus:ring-2 focus:ring-amber-200 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100"
+            />
+          </label>
+          <div className="grid gap-4 lg:grid-cols-2">
+            <label className="space-y-2 text-sm text-gray-700 dark:text-gray-300">
+              Expiry
+              <input
+                value={data.cardExpiry}
+                onChange={(event) => setData({ ...data, cardExpiry: event.target.value })}
+                placeholder="MM/YY"
+                className="w-full rounded-3xl border border-gray-200 bg-white px-4 py-3 text-sm text-gray-900 outline-none transition focus:border-amber-500 focus:ring-2 focus:ring-amber-200 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100"
+              />
+            </label>
+            <label className="space-y-2 text-sm text-gray-700 dark:text-gray-300">
+              CVC
+              <input
+                value={data.cardCvc}
+                onChange={(event) => setData({ ...data, cardCvc: event.target.value })}
+                placeholder="123"
+                className="w-full rounded-3xl border border-gray-200 bg-white px-4 py-3 text-sm text-gray-900 outline-none transition focus:border-amber-500 focus:ring-2 focus:ring-amber-200 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100"
+              />
+            </label>
+          </div>
+        </div>
+      )}
+
+      <div className="flex flex-col gap-3 rounded-3xl border border-gray-200 bg-white p-4 dark:border-gray-800 dark:bg-gray-950">
+        <p className="text-sm text-gray-500 dark:text-gray-400">Need an alternate payment flow?</p>
+        <button
+          type="button"
+          onClick={openPaymentQr}
+          className="inline-flex items-center justify-center rounded-full bg-gray-100 px-4 py-3 text-sm font-semibold text-gray-900 transition hover:bg-gray-200 dark:bg-gray-800 dark:text-gray-100 dark:hover:bg-gray-700"
+        >
+          Open QR payment page
+        </button>
+      </div>
+
+      <button
+        type="submit"
+        className="w-full rounded-full bg-amber-500 px-5 py-4 text-sm font-semibold text-white transition hover:bg-amber-600"
+      >
+        Confirm payment details
+      </button>
+    </form>
+  )
+}
+
+function CompletionTab({ status, onRetry }) {
+  if (!status) {
+    return (
+      <div className="rounded-3xl border border-dashed border-gray-300 bg-white p-6 text-center dark:border-gray-800 dark:bg-gray-950">
+        <p className="text-sm text-gray-500 dark:text-gray-400">Complete your delivery and payment details to see success or failure status here.</p>
+      </div>
+    )
+  }
+
+  const isSuccess = status === 'success'
+  return (
+    <div className="rounded-3xl border p-8 text-center shadow-sm dark:border-gray-800 dark:bg-gray-950">
+      <div className={`mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-full ${isSuccess ? 'bg-emerald-500/10 text-emerald-600' : 'bg-red-500/10 text-red-600'}`}>
+        <span className="text-4xl">{isSuccess ? '✓' : '✕'}</span>
+      </div>
+      <h2 className="text-2xl font-semibold ${isSuccess ? 'text-gray-900 dark:text-white' : 'text-red-600'}">
+        {isSuccess ? 'Payment completed' : 'Payment failed'}
+      </h2>
+      <p className="mt-4 text-sm text-gray-600 dark:text-gray-400">
+        {isSuccess ? 'Your order is confirmed and will be ready for pickup soon.' : 'There was a problem processing your payment. Please review your details and try again.'}
+      </p>
+      {!isSuccess && (
+        <button
+          type="button"
+          onClick={onRetry}
+          className="mt-6 inline-flex items-center justify-center rounded-full bg-amber-500 px-5 py-3 text-sm font-semibold text-white transition hover:bg-amber-600"
+        >
+          Retry payment
+        </button>
+      )}
+    </div>
+  )
+}
+
+export default function Checkout() {
+  const navigate = useNavigate()
+  const [activeTab, setActiveTab] = useState(1)
+  const [checkoutStatus, setCheckoutStatus] = useState(null)
+  const [deliveryInfo, setDeliveryInfo] = useState({ location: '', cityTown: '', street: '', contact: '' })
+  const [paymentInfo, setPaymentInfo] = useState({ paymentPhone: '', paymentEmail: '', cardName: '', cardNumber: '', cardExpiry: '', cardCvc: '' })
+  const [selectedMethod, setSelectedMethod] = useState('mpesa')
+
+  const availablePoints = useMemo(() => {
+    const cityValue = deliveryInfo.cityTown.trim().toLowerCase()
+    const streetValue = deliveryInfo.street.trim().toLowerCase()
+    return pickupPoints.filter((point) => {
+      const matchesCity = cityValue ? point.city.toLowerCase().includes(cityValue) : true
+      const matchesStreet = streetValue ? point.street.toLowerCase().includes(streetValue) : true
+      return matchesCity && matchesStreet
+    })
+  }, [deliveryInfo.cityTown, deliveryInfo.street])
+
+  const openPaymentQr = () => {
+    window.open('/payment-qr', '_blank')
+  }
+
+  return (
+    <div className="min-h-screen bg-white dark:bg-gray-950 transition-colors duration-300">
+      <Header />
+      <main className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
+        <div className="mb-8 flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+          <div>
+            <h1 className="text-4xl font-semibold tracking-tight text-gray-900 dark:text-white">Checkout</h1>
+            <p className="mt-3 max-w-2xl text-sm text-gray-600 dark:text-gray-400">
+              Complete your order with delivery details, payment method selection, and final confirmation.
+            </p>
+          </div>
+          <button
+            type="button"
+            onClick={() => navigate('/')}
+            className="inline-flex items-center justify-center rounded-full border border-gray-200 bg-white px-5 py-3 text-sm font-semibold text-gray-700 transition hover:border-amber-300 hover:bg-amber-50 dark:border-gray-800 dark:bg-gray-900 dark:text-gray-200 dark:hover:border-amber-500 dark:hover:bg-amber-950"
+          >
+            Back to shop
+          </button>
+        </div>
+
+        <div className="grid gap-8 lg:grid-cols-[1.2fr_0.8fr]">
+          <div className="space-y-6 rounded-[2rem] border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-800 dark:bg-gray-950">
+            <div className="flex gap-3 overflow-x-auto pb-3">
+              {[1, 2, 3].map((tab) => (
+                <button
+                  key={tab}
+                  type="button"
+                  onClick={() => setActiveTab(tab)}
+                  className={`min-w-[8rem] rounded-full px-4 py-3 text-sm font-semibold transition ${activeTab === tab ? 'bg-amber-500 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700'}`}
+                >
+                  {tab === 1 ? 'Delivery info' : tab === 2 ? 'Payment info' : 'Confirmation'}
+                </button>
+              ))}
+            </div>
+
+            <div>
+              {activeTab === 1 && (
+                <DeliveryTab data={deliveryInfo} setData={setDeliveryInfo} availablePoints={availablePoints} />
+              )}
+              {activeTab === 2 && (
+                <PaymentTab data={paymentInfo} setData={setPaymentInfo} selectedMethod={selectedMethod} setSelectedMethod={setSelectedMethod} openPaymentQr={openPaymentQr} setCheckoutStatus={setCheckoutStatus} />
+              )}
+              {activeTab === 3 && <CompletionTab status={checkoutStatus} onRetry={() => setActiveTab(2)} />}
+            </div>
+          </div>
+
+          <aside className="space-y-6 rounded-[2rem] border border-gray-200 bg-gray-50 p-6 dark:border-gray-800 dark:bg-gray-900/80">
+            <div className="rounded-3xl bg-white p-5 shadow-sm dark:bg-gray-950">
+              <p className="text-xs uppercase tracking-[0.3em] text-amber-600">Order summary</p>
+              <h2 className="mt-4 text-lg font-semibold text-gray-900 dark:text-white">Review your checkout</h2>
+              <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">Use the tabs to complete delivery, choose a payment method, and get confirmation.</p>
+            </div>
+
+            <div className="space-y-4 rounded-3xl border border-gray-200 bg-white p-5 shadow-sm dark:border-gray-800 dark:bg-gray-950">
+              <div>
+                <p className="text-sm font-semibold text-gray-900 dark:text-white">Delivery address</p>
+                <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">{deliveryInfo.location || 'Location not entered'}</p>
+                <p className="text-sm text-gray-600 dark:text-gray-400">{deliveryInfo.cityTown || 'City/Town not entered'}</p>
+                <p className="text-sm text-gray-600 dark:text-gray-400">{deliveryInfo.street || 'Street not entered'}</p>
+                <p className="mt-1 text-sm font-medium text-amber-600 dark:text-amber-300">Contact: {deliveryInfo.contact || 'Not provided'}</p>
+              </div>
+
+              <div className="rounded-3xl bg-amber-50 p-4 dark:bg-amber-500/10">
+                <p className="text-sm font-semibold text-amber-700 dark:text-amber-200">Payment</p>
+                <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">{paymentMethods.find((method) => method.id === selectedMethod)?.label}</p>
+                <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">{selectedMethod === 'creditcard' ? 'Credit card details' : selectedMethod === 'paypal' || selectedMethod === 'stripe' ? 'Email payment' : 'Mobile money payment'}</p>
+              </div>
+            </div>
+
+            <button
+              type="button"
+              onClick={() => setActiveTab(3)}
+              className="w-full rounded-full bg-amber-500 px-5 py-4 text-sm font-semibold text-white transition hover:bg-amber-600"
+            >
+              View confirmation
+            </button>
+          </aside>
+        </div>
+      </main>
+      <Footer />
+      <CartPanel />
+    </div>
+  )
+}
