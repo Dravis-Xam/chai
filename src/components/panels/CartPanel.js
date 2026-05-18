@@ -102,10 +102,10 @@ export default function CartPanel() {
         className={`transform transition-all duration-300 ease-out ${
           isOpen
             ? isMobile
-              ? 'translate-y-0'
+              ? 'translate-y-0 pb-20'
               : 'translate-x-0'
             : isMobile
-            ? 'translate-y-full'
+            ? 'translate-y-full pb-20'
             : '-translate-x-full'
         } ${panelClasses} bg-white dark:bg-gray-950 shadow-2xl flex flex-col overflow-hidden`}
       >
