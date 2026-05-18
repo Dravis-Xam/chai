@@ -1,11 +1,12 @@
 import React, { useState, useEffect, useRef } from 'react'
+import { useLocation, useNavigate } from 'react-router'
 import chaiDark from "../assets/chai_logo_dark.png"
 import chaiLight from "../assets/chai_logo_light.png"
 import { useTheme } from "../hooks/ThemeContext"
 import { useCart } from "../hooks/CartContext"
 
 const navItems = [
-  { name: 'Shop', href: '#shop', icon: (
+  { name: 'Shop', href: '/shop', icon: (
     <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 7h-4.18A3 3 0 0013 4.18V4a2 2 0 10-4 0v.18A3 3 0 008.18 7H4a1 1 0 00-1 1v1a1 1 0 001 1h1v9a2 2 0 002 2h10a2 2 0 002-2v-9h1a1 1 0 001-1V8a1 1 0 00-1-1zm-8-2a1 1 0 110-2 1 1 0 010 2zm0 3a1 1 0 110-2 1 1 0 010 2zm-6 4h12v8H6v-8z" />
     </svg>
@@ -34,11 +35,13 @@ const sampleSearchItems = [
 export default function Header() {
   const { isDarkMode, toggleTheme } = useTheme()
   const { setIsOpen, cartItems } = useCart()
+  const location = useLocation()
+  const navigate = useNavigate()
   const [isSearchOpen, setIsSearchOpen] = useState(false)
   const [searchTerm, setSearchTerm] = useState('')
   const [isScrolled, setIsScrolled] = useState(false)
   const [showNotifications, setShowNotifications] = useState(false)
-  const [activeNav, setActiveNav] = useState('#shop')
+  const [activeNav, setActiveNav] = useState(location.pathname === '/shop' ? '/shop' : '#shop')
   const [hoveredNav, setHoveredNav] = useState(null)
   const [indicatorStyle, setIndicatorStyle] = useState({ left: 0, width: 0 })
   const navRef = useRef(null)
@@ -105,10 +108,14 @@ export default function Header() {
   )
 
   const handleNavClick = (href) => {
-    const targetId = href.replace('#', '')
-    const targetElement = document.getElementById(targetId)
-    if (targetElement) {
-      targetElement.scrollIntoView({ behavior: 'smooth', block: 'center' })
+    if (href.startsWith('/')) {
+      navigate(href)
+    } else {
+      const targetId = href.replace('#', '')
+      const targetElement = document.getElementById(targetId)
+      if (targetElement) {
+        targetElement.scrollIntoView({ behavior: 'smooth', block: 'center' })
+      }
     }
     setActiveNav(href)
   }
@@ -134,6 +141,14 @@ export default function Header() {
     updateIndicatorPosition()
   }, [activeNav])
 
+  useEffect(() => {
+    if (location.pathname.startsWith('/shop') || location.pathname.startsWith('/product')) {
+      setActiveNav('/shop')
+    } else if (location.pathname === '/') {
+      setActiveNav('#shop')
+    }
+  }, [location.pathname])
+
   return (
     <>
       {/* Top Header */}
@@ -147,7 +162,7 @@ export default function Header() {
         }`}>
           <div className="flex h-16 items-center justify-between px-4 sm:px-6 lg:px-8">
             {/* Logo Section */}
-            <div className="flex items-center gap-2 shrink-0">
+            <div className="flex items-center gap-2 shrink-0 cursor-pointer" onClick={()=>navigate("/")}>
               <span className="text-xl font-semibold tracking-tight text-gray-900 dark:text-white">
                 Chai
               </span>

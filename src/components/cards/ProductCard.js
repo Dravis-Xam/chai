@@ -1,4 +1,5 @@
 import React, { useState } from 'react'
+import { Link } from 'react-router'
 import { useCart } from '../../hooks/CartContext';
 
 export default function ProductCard({ item }) {
@@ -53,9 +54,10 @@ export default function ProductCard({ item }) {
       <div className="relative p-4">
         {/* Title */}
         <h3 className="mb-1 text-lg font-semibold text-gray-900 transition-colors group-hover:text-amber-600 dark:text-white dark:group-hover:text-amber-500">
-          {item.name}
+          <Link to={`/product/${item.id}`} className="hover:underline focus:outline-none focus:ring-2 focus:ring-amber-500">
+            {item.name}
+          </Link>
         </h3>
-        
         {/* Description */}
         <p className="mb-3 text-sm text-gray-600 line-clamp-2 dark:text-gray-400">
           {item.description}

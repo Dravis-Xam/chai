@@ -1,4 +1,5 @@
 import React from 'react'
+import { Link } from 'react-router'
 import chaiLight from "../assets/chai_logo_light.png"
 import chaiDark from "../assets/chai_logo_dark.png"
 import { useTheme } from "../hooks/ThemeContext"
@@ -35,7 +36,7 @@ export default function Footer() {
           <nav aria-label="Footer navigation" className="md:col-span-1">
             <h4 className="text-sm font-semibold mb-3">Navigation</h4>
             <ul className="space-y-2 text-sm">
-              <li className="flex items-center gap-2"><svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-amber-500" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path d="M3 9a1 1 0 011-1h3V5a1 1 0 112 0v3h3a1 1 0 110 2H9v3a1 1 0 11-2 0V11H4a1 1 0 01-1-1z" /></svg><a href="#shop" className="hover:underline">Shop</a></li>
+              <li className="flex items-center gap-2"><svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-amber-500" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path d="M3 9a1 1 0 011-1h3V5a1 1 0 112 0v3h3a1 1 0 110 2H9v3a1 1 0 11-2 0V11H4a1 1 0 01-1-1z" /></svg><Link to="/shop" className="hover:underline">Shop</Link></li>
               <li className="flex items-center gap-2"><svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-amber-500" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path d="M16 11V5a1 1 0 00-1-1h-3v2h2v4h2zM4 9v6a1 1 0 001 1h3v-2H6V9H4z" /></svg><a href="#cart" className="hover:underline">Cart</a></li>
               <li className="flex items-center gap-2"><svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-amber-500" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path d="M10 2a4 4 0 110 8 4 4 0 010-8zM2 18a8 8 0 0116 0H2z" /></svg><a href="#profile" className="hover:underline">Profile</a></li>
               <li className="flex items-center gap-2"><svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-amber-500" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path d="M2 5a2 2 0 012-2h12a2 2 0 012 2v10a2 2 0 01-2 2H4a2 2 0 01-2-2V5z" /></svg><a href="/about" className="hover:underline">About</a></li>
