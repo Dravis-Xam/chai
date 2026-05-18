@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react'
 import chaiDark from "../assets/chai_logo_dark.png"
 import chaiLight from "../assets/chai_logo_light.png"
 import { useTheme } from "../hooks/ThemeContext"
+import { useCart } from "../hooks/CartContext"
 
 const navItems = [
   { name: 'Shop', href: '#shop', icon: (
@@ -32,10 +33,10 @@ const sampleSearchItems = [
 
 export default function Header() {
   const { isDarkMode, toggleTheme } = useTheme()
+  const { setIsOpen, cartItems } = useCart()
   const [isSearchOpen, setIsSearchOpen] = useState(false)
   const [searchTerm, setSearchTerm] = useState('')
   const [isScrolled, setIsScrolled] = useState(false)
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [showNotifications, setShowNotifications] = useState(false)
   const [activeNav, setActiveNav] = useState('#shop')
   const [hoveredNav, setHoveredNav] = useState(null)
@@ -66,7 +67,6 @@ export default function Header() {
     const handleKeydown = (event) => {
       if (event.key === 'Escape') {
         setIsSearchOpen(false)
-        setMobileMenuOpen(false)
         setShowNotifications(false)
       }
     }
@@ -110,7 +110,6 @@ export default function Header() {
     if (targetElement) {
       targetElement.scrollIntoView({ behavior: 'smooth', block: 'center' })
     }
-    setMobileMenuOpen(false)
     setActiveNav(href)
   }
 
@@ -165,14 +164,25 @@ export default function Header() {
                 <button
                   key={item.name}
                   type="button"
-                  onClick={() => handleNavClick(item.href)}
-                  className={`rounded-lg px-4 py-2 text-sm font-medium transition-all duration-200 flex items-center gap-2 ${
+                  onClick={() => {
+                    if (item.name === 'Cart') {
+                      setIsOpen(true)
+                    } else {
+                      handleNavClick(item.href)
+                    }
+                  }}
+                  className={`rounded-lg px-4 py-2 text-sm font-medium transition-all duration-200 flex items-center gap-2 relative ${
                     activeNav === item.href
                       ? 'text-amber-600 dark:text-amber-500 bg-amber-50 dark:bg-amber-950/50'
                       : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-gray-900 dark:hover:text-white'
                   }`}
                 >
                   <span>{item.name}</span>
+                  {item.name === 'Cart' && cartItems.length > 0 && (
+                    <span className="ml-1 inline-flex items-center justify-center h-5 w-5 rounded-full bg-red-500 text-xs font-semibold text-white">
+                      {cartItems.length}
+                    </span>
+                  )}
                 </button>
               ))}
             </nav>
@@ -342,7 +352,13 @@ export default function Header() {
                     if (el) buttonRefs.current[item.href] = el
                   }}
                   type="button"
-                  onClick={() => handleNavClick(item.href)}
+                  onClick={() => {
+                    if (item.name === 'Cart') {
+                      setIsOpen(true)
+                    } else {
+                      handleNavClick(item.href)
+                    }
+                  }}
                   onMouseEnter={() => setHoveredNav(item.name)}
                   onMouseLeave={() => setHoveredNav(null)}
                   className={`relative rounded-lg p-3 transition-all duration-200 group ${
@@ -353,6 +369,11 @@ export default function Header() {
                   aria-label={item.name}
                 >
                   {item.icon}
+                  {item.name === 'Cart' && cartItems.length > 0 && (
+                    <span className="absolute top-2 right-2 inline-flex items-center justify-center h-4 w-4 rounded-full bg-red-500 text-xs font-semibold text-white">
+                      {cartItems.length}
+                    </span>
+                  )}
                   
                   {/* Tooltip on hover */}
                   {hoveredNav === item.name && (

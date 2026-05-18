@@ -52,6 +52,7 @@ export default function Footer() {
             </ul>
 
             <div className="mt-6 space-y-2 text-sm text-gray-600 dark:text-gray-400">
+            <h4 className="text-sm font-semibold mb-3">Legals</h4>
               <div>Privacy</div>
               <div>Organization</div>
               <div>Leadership</div>
