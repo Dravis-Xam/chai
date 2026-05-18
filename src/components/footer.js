@@ -5,7 +5,7 @@ import { useTheme } from "../hooks/ThemeContext"
 
 export default function Footer() {
   const { isDarkMode } = useTheme()
-  const logo = isDarkMode ? chaiLight : chaiDark
+  const logo = !isDarkMode ? chaiLight : chaiDark
 
   return (
     <footer className="mt-16 bg-transparent text-gray-700 dark:text-gray-300">
@@ -13,10 +13,10 @@ export default function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
           <div className="space-y-4">
             <div className="flex items-center gap-3">
-              <div className="rounded-md bg-gray-50 dark:bg-gray-900 p-1">
+              <h3 className="text-lg font-semibold">Chai</h3>
+              <div className="rounded-md">
                 <img src={logo} alt="Chai logo" className="h-10 w-auto" />
               </div>
-              <h3 className="text-lg font-semibold">Chai</h3>
             </div>
             <p className="text-sm text-gray-600 dark:text-gray-400">Curated blends and accessories for cozy mornings.</p>
             <div className="mt-2 text-sm space-y-1">
