@@ -21,8 +21,8 @@ export default function Shop() {
   return (
     <div className="min-h-screen bg-white dark:bg-gray-950 transition-colors duration-300">
       <Header />
-      <main className="space-y-16 px-4 py-10 sm:px-6 lg:px-8">
-        <section className="rounded-3xl border border-gray-200 bg-white/90 p-6 shadow-sm dark:border-gray-800 dark:bg-gray-950/80">
+      <main className="space-y-16">
+        <section className="border border-gray-200 bg-white/90 p-6 shadow-sm dark:border-gray-800 dark:bg-gray-950/80">
           <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
             <div>
               <h1 className="text-3xl font-semibold text-gray-900 dark:text-white">Shop</h1>
