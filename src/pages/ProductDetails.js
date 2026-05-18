@@ -37,10 +37,10 @@ export default function ProductDetails() {
     <div className="min-h-screen bg-white dark:bg-gray-950 transition-colors duration-300">
       <Header />
       <main className="px-4 py-10 sm:px-6 lg:px-8">
-        <div className="mx-auto max-w-5xl rounded-3xl border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-800 dark:bg-gray-950">
-          <div className="grid gap-10 lg:grid-cols-[1.2fr_0.8fr]">
+        <div className="mx-auto max-w-6xl min-h-[85vh] rounded-3xl border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-800 dark:bg-gray-950">
+          <div className="grid min-h-[75vh] gap-10 lg:grid-cols-[1.2fr_0.8fr] items-start">
             <div className="space-y-6">
-              <img src={product.imageUrl} alt={product.name} className="w-full rounded-3xl object-cover shadow-xl" />
+              <img src={product.imageUrl} alt={product.name} className="h-[60vh] w-full rounded-3xl object-cover shadow-xl" />
               <div className="space-y-4">
                 <span className="inline-flex rounded-full bg-amber-100 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-amber-700 dark:bg-amber-900/30 dark:text-amber-300">
                   {product.category}
@@ -75,7 +75,7 @@ export default function ProductDetails() {
               </div>
             </div>
 
-            <aside className="space-y-6 rounded-3xl border border-gray-200 bg-gray-50 p-6 dark:border-gray-800 dark:bg-gray-900/80">
+            <aside className="space-y-6 rounded-3xl border border-gray-200 bg-gray-50 p-6 dark:border-gray-800 dark:bg-gray-900/80 lg:sticky lg:top-24">
               <div>
                 <h2 className="text-xl font-semibold text-gray-900 dark:text-white">Product details</h2>
                 <p className="mt-3 text-sm text-gray-600 dark:text-gray-300">Use this page to explore the product and add it to your cart before checkout.</p>

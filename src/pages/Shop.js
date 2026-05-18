@@ -3,17 +3,17 @@ import Header from '../components/header'
 import Footer from '../components/footer'
 import CartPanel from '../components/panels/CartPanel'
 import ProductCard from '../components/cards/ProductCard'
-import { preloadImages } from '../utils/preloadImages'
+import { preloadAsset } from '../utils/preloadImages'
 import { sampleItems } from '../data/products'
 
 export default function Shop() {
   const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
-    preloadImages(sampleItems)
+    preloadAsset(sampleItems)
       .then(() => setIsLoading(false))
       .catch((error) => {
-        console.error('Error preloading shop images:', error)
+        console.error('Error preloading shop assets:', error)
         setIsLoading(false)
       })
   }, [])
@@ -22,7 +22,7 @@ export default function Shop() {
     <div className="min-h-screen bg-white dark:bg-gray-950 transition-colors duration-300">
       <Header />
       <main className="space-y-16">
-        <section className="border border-gray-200 bg-white/90 p-6 shadow-sm dark:border-gray-800 dark:bg-gray-950/80">
+        <section className="bg-white/90 p-6 shadow-sm dark:bg-gray-950/80">
           <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
             <div>
               <h1 className="text-3xl font-semibold text-gray-900 dark:text-white">Shop</h1>

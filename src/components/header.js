@@ -4,6 +4,9 @@ import chaiDark from "../assets/chai_logo_dark.png"
 import chaiLight from "../assets/chai_logo_light.png"
 import { useTheme } from "../hooks/ThemeContext"
 import { useCart } from "../hooks/CartContext"
+import { useNotifications } from "../hooks/NotificationsContext"
+import { useAuth } from "../hooks/AuthContext"
+import { sampleItems } from "../data/products"
 
 const navItems = [
   { name: 'Shop', href: '/shop', icon: (
@@ -16,31 +19,26 @@ const navItems = [
       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-1.5 1.5M17 13l1.5 1.5M9 21h6M12 18v3M6 21h3M15 21h3" />
     </svg>
   )},
-  { name: 'Profile', href: '#profile', icon: (
+  { name: 'Profile', href: '#profile', authOnly: true, icon: (
     <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
     </svg>
   )},
 ]
 
-const sampleSearchItems = [
-  'Masala Chai',
-  'Green Tea',
-  'Herbal Infusions',
-  'Chai Cups',
-  'Loose Leaf',
-  'Tea Sets',
-]
-
 export default function Header() {
   const { isDarkMode, toggleTheme } = useTheme()
   const { setIsOpen, cartItems } = useCart()
+  const { isAuthenticated, logout } = useAuth()
   const location = useLocation()
   const navigate = useNavigate()
+  const { notifications, selectedNotifications, unreadCount, selectAllNotifications, clearAllNotifications, markSelectedAsRead, toggleNotificationSelection, markNotificationAsRead, deleteNotification } = useNotifications()
   const [isSearchOpen, setIsSearchOpen] = useState(false)
   const [searchTerm, setSearchTerm] = useState('')
   const [isScrolled, setIsScrolled] = useState(false)
+  const visibleNavItems = navItems.filter((item) => !item.authOnly || isAuthenticated)
   const [showNotifications, setShowNotifications] = useState(false)
+  const [hoveredNotification, setHoveredNotification] = useState(null)
   const [activeNav, setActiveNav] = useState(location.pathname === '/shop' ? '/shop' : '#shop')
   const [hoveredNav, setHoveredNav] = useState(null)
   const [indicatorStyle, setIndicatorStyle] = useState({ left: 0, width: 0 })
@@ -103,8 +101,28 @@ export default function Header() {
     }
   }, []);
 
-  const filteredSearchItems = sampleSearchItems.filter((item) =>
-    item.toLowerCase().includes(searchTerm.toLowerCase())
+  const searchSource = [
+    ...sampleItems.map((item) => ({
+      label: item.name,
+      subtitle: item.category,
+      type: 'product',
+      id: item.id,
+      href: `/product/${item.id}`,
+    })),
+    ...sampleItems.map((item) => ({
+      label: item.category,
+      subtitle: 'Browse category',
+      type: 'category',
+      href: '/shop',
+    })),
+    { label: 'Shop', subtitle: 'Browse all products', type: 'section', href: '/shop' },
+    { label: 'Cart', subtitle: 'Go to cart panel', type: 'section', href: '#cart' },
+    ...(isAuthenticated ? [{ label: 'Profile', subtitle: 'Open profile section', type: 'section', href: '#profile' }] : []),
+  ]
+
+  const filteredSearchItems = searchSource.filter((item) =>
+    item.label.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    item.subtitle.toLowerCase().includes(searchTerm.toLowerCase())
   )
 
   const handleNavClick = (href) => {
@@ -121,8 +139,22 @@ export default function Header() {
   }
 
   const handleSearchSelect = (item) => {
-    setSearchTerm(item)
+    setSearchTerm('')
     setIsSearchOpen(false)
+    if (item.type === 'product') {
+      navigate(item.href)
+      setActiveNav('/shop')
+      return
+    }
+
+    if (item.type === 'category' || item.type === 'section') {
+      if (item.href.startsWith('/')) {
+        navigate(item.href)
+      } else {
+        handleNavClick(item.href)
+      }
+      setActiveNav(item.href)
+    }
   }
 
   // Update indicator position when active nav changes
@@ -149,6 +181,7 @@ export default function Header() {
     }
   }, [location.pathname])
 
+
   return (
     <>
       {/* Top Header */}
@@ -157,8 +190,8 @@ export default function Header() {
       }`}>
         <div className={`mx-auto w-full transition-all duration-300 ${
           isScrolled
-            ? 'max-w-6xl rounded-2xl shadow-lg backdrop-blur-xl bg-white/80 dark:bg-gray-950/80'
-            : 'border-b border-gray-200 dark:border-gray-800 bg-white/95 dark:bg-gray-950/95 backdrop-blur-sm'
+            ? 'max-w-6xl rounded-[150px] shadow-lg backdrop-blur-xl bg-white/80 dark:bg-gray-950/80'
+            : 'border-b border-gray-200 dark:border-gray-800 bg-white/95 dark:bg-gray-950/95 backdrop-blur-sm rounded-[150px]'
         }`}>
           <div className="flex h-16 items-center justify-between px-4 sm:px-6 lg:px-8">
             {/* Logo Section */}
@@ -175,13 +208,14 @@ export default function Header() {
 
             {/* Center Navigation - Normal nav links */}
             <nav className="hidden md:flex items-center gap-1">
-              {navItems.map((item) => (
+              {visibleNavItems.map((item) => (
                 <button
                   key={item.name}
                   type="button"
                   onClick={() => {
                     if (item.name === 'Cart') {
                       setIsOpen(true)
+                      setActiveNav('#cart')
                     } else {
                       handleNavClick(item.href)
                     }
@@ -226,7 +260,7 @@ export default function Header() {
                       value={searchTerm}
                       onChange={(e) => setSearchTerm(e.target.value)}
                       placeholder="Search Chai..."
-                      className="w-32 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 px-3 py-2 text-sm text-gray-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-gray-400 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-amber-500 sm:w-48 lg:w-64"
+                      className="w-full max-w-xs rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 px-3 py-2 text-sm text-gray-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-gray-400 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-amber-500 sm:w-48 lg:w-64"
                       autoFocus
                     />
                     {searchTerm && (
@@ -289,58 +323,159 @@ export default function Header() {
                   <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
                   </svg>
-                  <span className="absolute right-1 top-1 h-2.5 w-2.5 rounded-full bg-red-500" />
+                  {unreadCount > 0 && (
+                    <span className="absolute -top-1 -right-1 inline-flex min-w-[1.2rem] items-center justify-center rounded-full bg-red-500 px-1.5 py-0.5 text-[10px] font-semibold text-white">
+                      {unreadCount}
+                    </span>
+                  )}
                 </button>
 
                 {showNotifications && (
                   <div className="absolute right-0 top-full z-20 mt-2 w-72 overflow-hidden rounded-2xl border border-gray-200 dark:border-gray-800 bg-white/95 dark:bg-gray-950/95 backdrop-blur-sm shadow-xl">
-                    <div className="border-b border-gray-100 dark:border-gray-800 px-4 py-3">
-                      <p className="text-sm font-semibold text-gray-900 dark:text-white">Notifications</p>
+                    <div className="flex items-center justify-between border-b border-gray-100 dark:border-gray-800 px-4 py-3">
+                      <div>
+                        <p className="text-sm font-semibold text-gray-900 dark:text-white">Notifications</p>
+                        <p className="text-xs text-gray-500 dark:text-gray-400">Tap an item or use actions</p>
+                      </div>
+                      <div className="flex items-center gap-1">
+                        <button
+                          type="button"
+                          onClick={selectAllNotifications}
+                          className="rounded-full p-2 text-gray-500 transition-colors hover:bg-gray-100 dark:hover:bg-gray-800"
+                          aria-label="Select all notifications"
+                        >
+                          <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M8 6v14M16 6v14M4 6l2-2h12l2 2M9 10l2 2 4-4" />
+                          </svg>
+                        </button>
+                        <button
+                          type="button"
+                          onClick={markSelectedAsRead}
+                          className="rounded-full p-2 text-gray-500 transition-colors hover:bg-gray-100 dark:hover:bg-gray-800"
+                          aria-label="Mark selected as read"
+                        >
+                          <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7M5 8l4 4L17 4" />
+                          </svg>
+                        </button>
+                        <button
+                          type="button"
+                          onClick={clearAllNotifications}
+                          className="rounded-full p-2 text-gray-500 transition-colors hover:bg-gray-100 dark:hover:bg-gray-800"
+                          aria-label="Clear all notifications"
+                        >
+                          <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 6h12M9 6V4h6v2M7 6v12a2 2 0 002 2h6a2 2 0 002-2V6H7z" />
+                          </svg>
+                        </button>
+                      </div>
                     </div>
                     <div className="space-y-2 px-4 py-3">
-                      <div className="rounded-xl bg-gray-50/80 dark:bg-gray-900/80 p-3 text-sm text-gray-700 dark:text-gray-300">
-                        <p className="font-medium">New blend dropped</p>
-                        <p className="mt-1">Try our limited edition Rose Chai.</p>
-                      </div>
-                      <div className="rounded-xl bg-gray-50/80 dark:bg-gray-900/80 p-3 text-sm text-gray-700 dark:text-gray-300">
-                        <p className="font-medium">Cart reminder</p>
-                        <p className="mt-1">You have 2 items waiting in your cart.</p>
-                      </div>
-                      <div className="rounded-xl bg-gray-50/80 dark:bg-gray-900/80 p-3 text-sm text-gray-700 dark:text-gray-300">
-                        <p className="font-medium">Profile tip</p>
-                        <p className="mt-1">Update your preferences to get fresh recommendations.</p>
-                      </div>
+                      {notifications.length === 0 ? (
+                        <div className="rounded-xl bg-gray-50/80 dark:bg-gray-900/80 p-3 text-sm text-gray-700 dark:text-gray-300">
+                          No notifications. You’re all caught up.
+                        </div>
+                      ) : (
+                        notifications.map((notice) => (
+                          <div
+                            key={notice.id}
+                            onMouseEnter={() => setHoveredNotification(notice.id)}
+                            onMouseLeave={() => setHoveredNotification(null)}
+                            className={`group relative rounded-xl p-3 text-sm transition-all ${notice.read ? 'bg-white dark:bg-gray-900/90' : 'bg-gray-50 dark:bg-gray-800/90'} ${selectedNotifications.includes(notice.id) ? 'ring-2 ring-amber-300 dark:ring-amber-500' : ''}`}
+                          >
+                            <div className="flex items-start gap-3">
+                              <div className="flex-shrink-0">
+                                <span className={`inline-flex h-2.5 w-2.5 rounded-full ${notice.read ? 'bg-gray-400' : 'bg-amber-500'}`} />
+                              </div>
+                              <div className="min-w-0 flex-1">
+                                <p className="font-medium text-gray-900 dark:text-white">{notice.title}</p>
+                                <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">{notice.subtitle}</p>
+                              </div>
+                              <div className={`absolute right-3 top-3 flex items-center gap-2 opacity-0 transition-opacity duration-200 ${hoveredNotification === notice.id ? 'opacity-100' : ''}`}>
+                                <button
+                                  type="button"
+                                  onClick={() => toggleNotificationSelection(notice.id)}
+                                  className="rounded-full p-1 text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-800"
+                                  aria-label="Select notification"
+                                >
+                                  <svg className="h-3.5 w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16v12H4z" />
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12l2 2 4-4" />
+                                  </svg>
+                                </button>
+                                <button
+                                  type="button"
+                                  onClick={() => markNotificationAsRead(notice.id)}
+                                  className="rounded-full p-1 text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-800"
+                                  aria-label="Mark notification as read"
+                                >
+                                  <svg className="h-3.5 w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 8l4 4L17 4" />
+                                  </svg>
+                                </button>
+                                <button
+                                  type="button"
+                                  onClick={() => deleteNotification(notice.id)}
+                                  className="rounded-full p-1 text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-800"
+                                  aria-label="Delete notification"
+                                >
+                                  <svg className="h-3.5 w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 6h12M9 6V4h6v2M7 6v12a2 2 0 002 2h6a2 2 0 002-2V6H7z" />
+                                  </svg>
+                                </button>
+                              </div>
+                            </div>
+                          </div>
+                        ))
+                      )}
                     </div>
                   </div>
                 )}
               </div>
+
+              <button
+                type="button"
+                onClick={() => {
+                  if (isAuthenticated) {
+                    logout()
+                    navigate('/')
+                  } else {
+                    navigate('/login')
+                  }
+                }}
+                className="rounded-full border border-gray-200 bg-white px-4 py-2 text-sm font-medium text-gray-700 transition-colors hover:border-amber-300 hover:bg-amber-50 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-200 dark:hover:border-amber-500 dark:hover:bg-amber-950"
+              >
+                {isAuthenticated ? 'Logout' : 'Login'}
+              </button>
             </div>
 
-            {/* Search Results Dropdown */}
+            {/* Search Results Panel */}
             {isSearchOpen && (
-              <div className="absolute right-0 top-full mt-2 z-10 w-full max-w-md rounded-2xl border border-gray-200 dark:border-gray-800 bg-white/95 dark:bg-gray-950/95 backdrop-blur-sm text-sm shadow-xl md:right-2">
-                <div className="space-y-2 px-4 py-4">
+              <div className="fixed inset-x-0 top-16 bottom-0 z-40 overflow-y-auto bg-white/95 dark:bg-gray-950/95 p-4 backdrop-blur-sm text-sm shadow-xl md:relative md:top-full md:bottom-auto md:w-96 md:overflow-y-auto md:bg-white/95 dark:md:bg-gray-950/95 md:p-0 md:rounded-[150px] md:border md:border-gray-200 dark:md:border-gray-800 md:shadow-xl">
+                <div className="space-y-2 px-4 py-4 md:px-0 md:py-0">
                   {searchTerm ? (
                     filteredSearchItems.length > 0 ? (
                       filteredSearchItems.map((item) => (
                         <button
-                          key={item}
+                          key={`${item.type}-${item.id || item.label}`}
                           type="button"
                           onClick={() => handleSearchSelect(item)}
-                          className="w-full rounded-xl px-3 py-2 text-left text-sm text-gray-700 dark:text-gray-300 transition-colors hover:bg-gray-100 dark:hover:bg-gray-800"
+                          className="w-full rounded-xl px-3 py-3 text-left text-sm text-gray-700 dark:text-gray-300 transition-colors hover:bg-gray-100 dark:hover:bg-gray-800"
                         >
-                          {item}
+                          <div className="font-medium">{item.label}</div>
+                          <div className="mt-1 text-xs text-gray-500 dark:text-gray-400">{item.subtitle}</div>
                         </button>
                       ))
                     ) : (
-                      <p className="rounded-xl border border-dashed border-gray-300 dark:border-gray-700 px-3 py-4 text-sm text-gray-500 dark:text-gray-400">
+                      <div className="rounded-xl border border-dashed border-gray-300 dark:border-gray-700 px-3 py-4 text-sm text-gray-500 dark:text-gray-400">
                         No matches found. Try another flavor.
-                      </p>
+                      </div>
                     )
                   ) : (
-                    <p className="rounded-xl border border-dashed border-gray-300 dark:border-gray-700 px-3 py-4 text-sm text-gray-500 dark:text-gray-400">
+                    <div className="rounded-xl border border-dashed border-gray-300 dark:border-gray-700 px-3 py-4 text-sm text-gray-500 dark:text-gray-400">
                       Search our shop by name, blend, or item.
-                    </p>
+                    </div>
                   )}
                 </div>
               </div>
@@ -353,14 +488,14 @@ export default function Header() {
       <div className="fixed bottom-0 left-0 right-0 z-50 pb-4 px-4 pointer-events-none md:hidden">
         <nav 
           ref={navRef}
-          className={`relative max-w-md mx-auto rounded-2xl backdrop-blur-xl transition-all duration-300 pointer-events-auto overflow-visible
+          className={`relative max-w-md mx-auto rounded-[150px] backdrop-blur-xl transition-all duration-300 pointer-events-auto overflow-visible
             ${isDarkMode 
               ? 'bg-black/40 hover:bg-black/60 border border-white/10' 
               : 'bg-white/40 hover:bg-white/60 border border-black/5'
             }`}
         >
           <div className="flex items-center justify-around gap-1 px-4 py-3">
-            {navItems.map((item) => (
+            {visibleNavItems.map((item) => (
               <div key={item.name} className="relative">
                 <button
                   ref={(el) => {
@@ -370,6 +505,7 @@ export default function Header() {
                   onClick={() => {
                     if (item.name === 'Cart') {
                       setIsOpen(true)
+                      setActiveNav('#cart')
                     } else {
                       handleNavClick(item.href)
                     }

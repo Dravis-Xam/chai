@@ -13,6 +13,7 @@ const COLORS = {
 export default function FeaturedSlider({ items = [], bg = 'gray-100' }) {
   const featured = items
   const [index, setIndex] = useState(0)
+  const [touchStartX, setTouchStartX] = useState(null)
   const nextIndex = (index + 1) % Math.max(1, featured.length)
   const count = featured.length
   const containerRef = useRef(null)
@@ -80,8 +81,27 @@ export default function FeaturedSlider({ items = [], bg = 'gray-100' }) {
   }, [])
 
   useEffect(() => {
-    return () => {}
-  }, [])
+    const slideTimer = setInterval(() => {
+      setIndex((currentIndex) => (currentIndex + 1) % Math.max(1, count))
+    }, 60000)
+
+    return () => clearInterval(slideTimer)
+  }, [count])
+
+  const handleTouchStart = (event) => {
+    setTouchStartX(event.touches[0].clientX)
+  }
+
+  const handleTouchEnd = (event) => {
+    if (touchStartX === null) return
+    const deltaX = event.changedTouches[0].clientX - touchStartX
+    if (deltaX > 40) {
+      goTo(index - 1)
+    } else if (deltaX < -40) {
+      goTo(index + 1)
+    }
+    setTouchStartX(null)
+  }
 
   if (!count) return null
 
@@ -113,7 +133,11 @@ export default function FeaturedSlider({ items = [], bg = 'gray-100' }) {
   // Mobile view: Normal slider layout
   if (isMobile) {
     return (
-      <section className={`mx-auto max-w-7xl ${getContainerPadding()} transition-all duration-300`}>
+      <section
+        className={`mx-auto max-w-7xl ${getContainerPadding()} transition-all duration-300`}
+        onTouchStart={handleTouchStart}
+        onTouchEnd={handleTouchEnd}
+      >
         <div className="flex flex-col gap-8">
           {/* Mobile: Text at top */}
           <div className="text-center">
@@ -207,7 +231,11 @@ export default function FeaturedSlider({ items = [], bg = 'gray-100' }) {
 
   // Desktop view: Side-by-side layout
   return (
-    <section className={`flex flex-row flex-nowrap overflow-x-auto overflow-y-hidden ${getContainerPadding()} transition-all duration-300`}>
+    <section
+      className={`flex flex-row flex-nowrap overflow-x-auto overflow-y-hidden ${getContainerPadding()} transition-all duration-300`}
+      onTouchStart={handleTouchStart}
+      onTouchEnd={handleTouchEnd}
+    >
       <div 
         className="flex flex-row flex-nowrap gap-8 items-center transition-all duration-300 w-full"
         style={{ transform: `scale(${scale})`, transformOrigin: 'center center' }}
