@@ -340,6 +340,27 @@ export default function Checkout() {
               )}
               {activeTab === 3 && <CompletionTab status={checkoutStatus} onRetry={() => setActiveTab(2)} />}
             </div>
+
+            <div className="flex gap-3 border-t border-gray-200 pt-6 dark:border-gray-800">
+              {activeTab > 1 && (
+                <button
+                  type="button"
+                  onClick={() => setActiveTab(activeTab - 1)}
+                  className="flex-1 rounded-full border border-gray-200 bg-white px-4 py-3 text-sm font-semibold text-gray-700 transition hover:bg-gray-100 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-200 dark:hover:bg-gray-800"
+                >
+                  Back
+                </button>
+              )}
+              {activeTab < 3 && (
+                <button
+                  type="button"
+                  onClick={() => setActiveTab(activeTab + 1)}
+                  className="flex-1 rounded-full bg-amber-500 px-4 py-3 text-sm font-semibold text-white transition hover:bg-amber-600"
+                >
+                  {activeTab === 2 ? 'Complete' : 'Next'}
+                </button>
+              )}
+            </div>
           </div>
 
           <aside className="space-y-6 rounded-[2rem] border border-gray-200 bg-gray-50 p-6 dark:border-gray-800 dark:bg-gray-900/80">
