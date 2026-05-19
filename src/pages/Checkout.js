@@ -65,7 +65,13 @@ function DeliveryTab({ data, setData, availablePoints }) {
           />
         </label>
       </div>
+    </div>
+  )
+}
 
+function PickupTab({ availablePoints }) {
+  return (
+    <div className="space-y-6">
       <div className="rounded-3xl border border-gray-200 bg-gray-50 p-5 dark:border-gray-800 dark:bg-gray-900/70">
         <div className="mb-4 flex items-center justify-between">
           <div>
@@ -297,13 +303,13 @@ export default function Checkout() {
   }
 
   return (
-    <div className="min-h-screen bg-white dark:bg-gray-950 transition-colors duration-300">
+    <div className="min-h-screen overflow-x-hidden bg-white dark:bg-gray-950 transition-colors duration-300">
       <Header />
-      <main className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
-        <div className="mb-8 flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+      <main className="mx-auto w-full max-w-7xl px-3 py-6 sm:px-6 sm:py-12 lg:px-8">
+        <div className="mb-6 flex flex-col gap-3 lg:mb-8 lg:gap-4 lg:flex-row lg:items-center lg:justify-between">
           <div>
-            <h1 className="text-4xl font-semibold tracking-tight text-gray-900 dark:text-white">Checkout</h1>
-            <p className="mt-3 max-w-2xl text-sm text-gray-600 dark:text-gray-400">
+            <h1 className="text-2xl font-semibold tracking-tight text-gray-900 sm:text-3xl lg:text-4xl dark:text-white">Checkout</h1>
+            <p className="mt-2 max-w-2xl text-xs sm:text-sm text-gray-600 dark:text-gray-400">
               Complete your order with delivery details, payment method selection, and final confirmation.
             </p>
           </div>
@@ -316,19 +322,26 @@ export default function Checkout() {
           </button>
         </div>
 
-        <div className="grid gap-8 lg:grid-cols-[1.2fr_0.8fr]">
-          <div className="space-y-6 rounded-[2rem] border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-800 dark:bg-gray-950">
-            <div className="flex gap-3 overflow-x-auto pb-3">
-              {[1, 2, 3].map((tab) => (
-                <button
-                  key={tab}
-                  type="button"
-                  onClick={() => setActiveTab(tab)}
-                  className={`min-w-[8rem] rounded-full px-4 py-3 text-sm font-semibold transition ${activeTab === tab ? 'bg-amber-500 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700'}`}
-                >
-                  {tab === 1 ? 'Delivery info' : tab === 2 ? 'Payment info' : 'Confirmation'}
-                </button>
-              ))}
+        <div className="grid gap-6 lg:gap-8 lg:grid-cols-[1.2fr_0.8fr]">
+          <div className="space-y-4 rounded-xl sm:rounded-[2rem] border border-gray-200 bg-white p-4 sm:p-6 shadow-sm dark:border-gray-800 dark:bg-gray-950 -translate-x-[8px]">
+            <div className="min-w-0 w-full max-w-full overflow-x-auto pb-2 sm:pb-3">
+              <div className="inline-flex w-max gap-2 sm:gap-3 whitespace-nowrap">
+                {[1, 2, 3, 4].map((tab) => (
+                  <button
+                    key={tab}
+                    type="button"
+                    onClick={() => setActiveTab(tab)}
+                    className={`flex-shrink-0 min-w-[5.5rem] sm:min-w-[7rem] rounded-full px-3 sm:px-4 py-2 sm:py-3 text-[11px] sm:text-sm font-semibold transition ${activeTab === tab ? 'bg-amber-500 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700'}`}
+                  >
+                    <span className="hidden sm:inline">
+                      {tab === 1 ? 'Delivery info' : tab === 2 ? 'Pickup point' : tab === 3 ? 'Payment info' : 'Confirmation'}
+                    </span>
+                    <span className="sm:hidden">
+                      {tab === 1 ? 'Delivery' : tab === 2 ? 'Pickup' : tab === 3 ? 'Payment' : 'Confirm'}
+                    </span>
+                  </button>
+                ))}
+              </div>
             </div>
 
             <div>
@@ -336,34 +349,37 @@ export default function Checkout() {
                 <DeliveryTab data={deliveryInfo} setData={setDeliveryInfo} availablePoints={availablePoints} />
               )}
               {activeTab === 2 && (
+                <PickupTab availablePoints={availablePoints} />
+              )}
+              {activeTab === 3 && (
                 <PaymentTab data={paymentInfo} setData={setPaymentInfo} selectedMethod={selectedMethod} setSelectedMethod={setSelectedMethod} openPaymentQr={openPaymentQr} setCheckoutStatus={setCheckoutStatus} />
               )}
-              {activeTab === 3 && <CompletionTab status={checkoutStatus} onRetry={() => setActiveTab(2)} />}
+              {activeTab === 4 && <CompletionTab status={checkoutStatus} onRetry={() => setActiveTab(3)} />}
             </div>
 
-            <div className="flex gap-3 border-t border-gray-200 pt-6 dark:border-gray-800">
+            <div className="flex gap-2 sm:gap-3 border-t border-gray-200 pt-4 sm:pt-6 dark:border-gray-800">
               {activeTab > 1 && (
                 <button
                   type="button"
                   onClick={() => setActiveTab(activeTab - 1)}
-                  className="flex-1 rounded-full border border-gray-200 bg-white px-4 py-3 text-sm font-semibold text-gray-700 transition hover:bg-gray-100 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-200 dark:hover:bg-gray-800"
+                  className="flex-1 rounded-full border border-gray-200 bg-white px-3 sm:px-4 py-2 sm:py-3 text-xs sm:text-sm font-semibold text-gray-700 transition hover:bg-gray-100 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-200 dark:hover:bg-gray-800"
                 >
                   Back
                 </button>
               )}
-              {activeTab < 3 && (
+              {activeTab < 4 && (
                 <button
                   type="button"
                   onClick={() => setActiveTab(activeTab + 1)}
-                  className="flex-1 rounded-full bg-amber-500 px-4 py-3 text-sm font-semibold text-white transition hover:bg-amber-600"
+                  className="flex-1 rounded-full bg-amber-500 px-3 sm:px-4 py-2 sm:py-3 text-xs sm:text-sm font-semibold text-white transition hover:bg-amber-600"
                 >
-                  {activeTab === 2 ? 'Complete' : 'Next'}
+                  {activeTab === 3 ? 'Complete' : 'Next'}
                 </button>
               )}
             </div>
           </div>
 
-          <aside className="space-y-6 rounded-[2rem] border border-gray-200 bg-gray-50 p-6 dark:border-gray-800 dark:bg-gray-900/80">
+          <aside className="hidden lg:block space-y-6 rounded-[2rem] border border-gray-200 bg-gray-50 p-6 dark:border-gray-800 dark:bg-gray-900/80">
             <div className="rounded-3xl bg-white p-5 shadow-sm dark:bg-gray-950">
               <p className="text-xs uppercase tracking-[0.3em] text-amber-600">Order summary</p>
               <h2 className="mt-4 text-lg font-semibold text-gray-900 dark:text-white">Review your checkout</h2>
@@ -388,7 +404,7 @@ export default function Checkout() {
 
             <button
               type="button"
-              onClick={() => setActiveTab(3)}
+              onClick={() => setActiveTab(4)}
               className="w-full rounded-full bg-amber-500 px-5 py-4 text-sm font-semibold text-white transition hover:bg-amber-600"
             >
               View confirmation

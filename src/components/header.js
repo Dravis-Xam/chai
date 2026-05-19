@@ -6,20 +6,22 @@ import { useTheme } from "../hooks/ThemeContext"
 import { useCart } from "../hooks/CartContext"
 import { useNotifications } from "../hooks/NotificationsContext"
 import { useAuth } from "../hooks/AuthContext"
+import { useLanguage } from '../hooks/LanguageContext'
+import LanguageSwitcher from './LanguageSwitcher'
 import { sampleItems } from "../data/products"
 
 const navItems = [
-  { name: 'Shop', href: '/shop', icon: (
+  { name: 'Shop', href: '/shop', labelKey: 'header.shop', icon: (
     <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 7h-4.18A3 3 0 0013 4.18V4a2 2 0 10-4 0v.18A3 3 0 008.18 7H4a1 1 0 00-1 1v1a1 1 0 001 1h1v9a2 2 0 002 2h10a2 2 0 002-2v-9h1a1 1 0 001-1V8a1 1 0 00-1-1zm-8-2a1 1 0 110-2 1 1 0 010 2zm0 3a1 1 0 110-2 1 1 0 010 2zm-6 4h12v8H6v-8z" />
     </svg>
   )},
-  { name: 'Cart', href: '#cart', icon: (
+  { name: 'Cart', href: '#cart', labelKey: 'header.cart', icon: (
     <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-1.5 1.5M17 13l1.5 1.5M9 21h6M12 18v3M6 21h3M15 21h3" />
     </svg>
   )},
-  { name: 'Profile', href: '#profile', authOnly: true, icon: (
+  { name: 'Profile', href: '#profile', authOnly: true, labelKey: 'header.profile', icon: (
     <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
     </svg>
@@ -35,7 +37,7 @@ function HeaderLogo({ isDarkMode, navigate }) {
   )
 }
 
-function DesktopNav({ visibleNavItems, activeNav, setActiveNav, setIsOpen, handleNavClick, cartItems }) {
+function DesktopNav({ visibleNavItems, activeNav, setActiveNav, setIsOpen, handleNavClick, cartItems, t }) {
   return (
     <nav className="hidden md:flex items-center gap-1">
       {visibleNavItems.map((item) => (
@@ -56,7 +58,7 @@ function DesktopNav({ visibleNavItems, activeNav, setActiveNav, setIsOpen, handl
               : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-gray-900 dark:hover:text-white'
           }`}
         >
-          <span>{item.name}</span>
+          <span>{t(item.labelKey)}</span>
           {item.name === 'Cart' && cartItems.length > 0 && (
             <span className="ml-1 inline-flex items-center justify-center h-5 w-5 rounded-full bg-red-500 text-xs font-semibold text-white">
               {cartItems.length}
@@ -68,7 +70,7 @@ function DesktopNav({ visibleNavItems, activeNav, setActiveNav, setIsOpen, handl
   )
 }
 
-function SearchPanel({ isSearchOpen, searchTerm, setSearchTerm, filteredSearchItems, handleSearchSelect, closeSearch }) {
+function SearchPanel({ isSearchOpen, searchTerm, setSearchTerm, filteredSearchItems, handleSearchSelect, closeSearch, t }) {
   if (!isSearchOpen) return null
   return (
     <div className="fixed inset-x-0 top-16 bottom-0 z-40 overflow-y-auto bg-white/95 dark:bg-gray-950/95 p-4 backdrop-blur-sm text-sm shadow-xl md:relative md:top-full md:bottom-auto md:w-96 md:overflow-y-auto md:bg-white/95 dark:md:bg-gray-950/95 md:p-0 md:border md:border-gray-200 dark:md:border-gray-800 md:shadow-xl">
@@ -79,7 +81,7 @@ function SearchPanel({ isSearchOpen, searchTerm, setSearchTerm, filteredSearchIt
               type="text"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              placeholder="Search Chai..."
+              placeholder={t('header.searchPlaceholder')}
               className="w-full rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 px-3 py-2 text-sm text-gray-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-gray-400 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-amber-500"
               autoFocus
             />
@@ -88,7 +90,7 @@ function SearchPanel({ isSearchOpen, searchTerm, setSearchTerm, filteredSearchIt
                 type="button"
                 onClick={() => setSearchTerm('')}
                 className="absolute right-2 top-1/2 -translate-y-1/2 rounded-full p-1 text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-800"
-                aria-label="Clear search"
+                aria-label={t('header.clearSearch')}
               >
                 <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -101,7 +103,7 @@ function SearchPanel({ isSearchOpen, searchTerm, setSearchTerm, filteredSearchIt
             onClick={closeSearch}
             className="rounded-lg px-3 py-2 text-sm font-medium text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800"
           >
-            Cancel
+            {t('header.cancel')}
           </button>
         </div>
         <div className="space-y-2 px-4 py-0 md:px-0 md:py-0">
@@ -120,12 +122,12 @@ function SearchPanel({ isSearchOpen, searchTerm, setSearchTerm, filteredSearchIt
               ))
             ) : (
               <div className="rounded-xl border border-dashed border-gray-300 dark:border-gray-700 px-3 py-4 text-sm text-gray-500 dark:text-gray-400">
-                No matches found. Try another flavor.
+                {t('header.searchNoResults')}
               </div>
             )
           ) : (
             <div className="rounded-xl border border-dashed border-gray-300 dark:border-gray-700 px-3 py-4 text-sm text-gray-500 dark:text-gray-400">
-              Search our shop by name, blend, or item.
+              {t('header.searchPrompt')}
             </div>
           )}
         </div>
@@ -134,21 +136,21 @@ function SearchPanel({ isSearchOpen, searchTerm, setSearchTerm, filteredSearchIt
   )
 }
 
-function NotificationsDropdown({ showNotifications, notifications, selectedNotifications, hoveredNotification, setHoveredNotification, selectAllNotifications, markSelectedAsRead, clearAllNotifications, toggleNotificationSelection, markNotificationAsRead, deleteNotification }) {
+function NotificationsDropdown({ showNotifications, notifications, selectedNotifications, hoveredNotification, setHoveredNotification, selectAllNotifications, markSelectedAsRead, clearAllNotifications, toggleNotificationSelection, markNotificationAsRead, deleteNotification, t }) {
   if (!showNotifications) return null
   return (
     <div className="absolute right-0 top-full z-20 mt-2 w-72 overflow-hidden rounded-2xl border border-gray-200 dark:border-gray-800 bg-white/95 dark:bg-gray-950/95 backdrop-blur-sm shadow-xl">
       <div className="flex items-center justify-between border-b border-gray-100 dark:border-gray-800 px-4 py-3">
         <div>
-          <p className="text-sm font-semibold text-gray-900 dark:text-white">Notifications</p>
-          <p className="text-xs text-gray-500 dark:text-gray-400">Tap an item or use actions</p>
+          <p className="text-sm font-semibold text-gray-900 dark:text-white">{t('header.notifications')}</p>
+          <p className="text-xs text-gray-500 dark:text-gray-400">{t('header.notificationsPrompt')}</p>
         </div>
         <div className="flex items-center gap-1">
           <button
             type="button"
             onClick={selectAllNotifications}
             className="rounded-full p-2 text-gray-500 transition-colors hover:bg-gray-100 dark:hover:bg-gray-800"
-            aria-label="Select all notifications"
+            aria-label={t('header.selectAll')}
           >
             <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M8 6v14M16 6v14M4 6l2-2h12l2 2M9 10l2 2 4-4" />
@@ -158,7 +160,7 @@ function NotificationsDropdown({ showNotifications, notifications, selectedNotif
             type="button"
             onClick={markSelectedAsRead}
             className="rounded-full p-2 text-gray-500 transition-colors hover:bg-gray-100 dark:hover:bg-gray-800"
-            aria-label="Mark selected as read"
+            aria-label={t('header.markRead')}
           >
             <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7M5 8l4 4L17 4" />
@@ -168,7 +170,7 @@ function NotificationsDropdown({ showNotifications, notifications, selectedNotif
             type="button"
             onClick={clearAllNotifications}
             className="rounded-full p-2 text-gray-500 transition-colors hover:bg-gray-100 dark:hover:bg-gray-800"
-            aria-label="Clear all notifications"
+            aria-label={t('header.clearAll')}
           >
             <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 6h12M9 6V4h6v2M7 6v12a2 2 0 002 2h6a2 2 0 002-2V6H7z" />
@@ -179,7 +181,7 @@ function NotificationsDropdown({ showNotifications, notifications, selectedNotif
       <div className="space-y-2 px-4 py-3">
         {notifications.length === 0 ? (
           <div className="rounded-xl bg-gray-50/80 dark:bg-gray-900/80 p-3 text-sm text-gray-700 dark:text-gray-300">
-            No notifications. You’re all caught up.
+            {t('header.noNotifications')}
           </div>
         ) : (
           notifications.map((notice) => (
@@ -270,7 +272,7 @@ function MobileBottomNav({ visibleNavItems, activeNav, setActiveNav, setIsOpen, 
                 className={`relative rounded-lg p-3 transition-all duration-200 group ${
                   activeNav === item.href ? 'text-amber-600 dark:text-amber-500' : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'
                 }`}
-                aria-label={item.name}
+                aria-label={t(item.labelKey)}
               >
                 {item.icon}
                 {item.name === 'Cart' && cartItems.length > 0 && (
@@ -281,7 +283,7 @@ function MobileBottomNav({ visibleNavItems, activeNav, setActiveNav, setIsOpen, 
 
                 {hoveredNav === item.name && (
                   <span className="absolute -top-10 left-1/2 transform -translate-x-1/2 whitespace-nowrap rounded-lg bg-gray-900 dark:bg-gray-800 px-2 py-1 text-xs text-white shadow-lg animate-fadeIn">
-                    {item.name}
+                    {t(item.labelKey)}
                   </span>
                 )}
               </button>
@@ -314,6 +316,7 @@ export default function Header() {
   const { isDarkMode, toggleTheme } = useTheme()
   const { setIsOpen, cartItems } = useCart()
   const { isAuthenticated, logout } = useAuth()
+  const { t } = useLanguage()
   const location = useLocation()
   const navigate = useNavigate()
   const { notifications, selectedNotifications, unreadCount, selectAllNotifications, clearAllNotifications, markSelectedAsRead, toggleNotificationSelection, markNotificationAsRead, deleteNotification } = useNotifications()
@@ -486,11 +489,12 @@ export default function Header() {
               setIsOpen={setIsOpen}
               handleNavClick={handleNavClick}
               cartItems={cartItems}
+              t={t}
             />
 
             {/* Right Section */}
             <div className="relative flex items-center gap-1 sm:gap-2">
-                <div className="flex items-center gap-1 sm:gap-2">
+              <div className="flex items-center gap-1 sm:gap-2">
                 <button
                   type="button"
                   onClick={() => {
@@ -498,7 +502,7 @@ export default function Header() {
                     setShowNotifications(false)
                   }}
                   className={`rounded-lg p-2 text-gray-600 dark:text-gray-400 transition-colors hover:bg-gray-100 dark:hover:bg-gray-800 ${isSearchOpen ? 'bg-gray-100 dark:bg-gray-800' : ''}`}
-                  aria-label="Open search"
+                  aria-label={t('header.openSearch')}
                   aria-expanded={isSearchOpen}
                 >
                   <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -506,6 +510,8 @@ export default function Header() {
                   </svg>
                 </button>
               </div>
+
+              <LanguageSwitcher />
 
               <button
                 type="button"
@@ -535,7 +541,7 @@ export default function Header() {
                     setIsSearchOpen(false)
                   }}
                   className="relative rounded-lg p-2 text-gray-600 dark:text-gray-400 transition-colors hover:bg-gray-100 dark:hover:bg-gray-800"
-                  aria-label="Toggle notifications"
+                        aria-label={t('header.notifications')}
                   aria-expanded={showNotifications}
                 >
                   <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -561,6 +567,7 @@ export default function Header() {
                     toggleNotificationSelection={toggleNotificationSelection}
                     markNotificationAsRead={markNotificationAsRead}
                     deleteNotification={deleteNotification}
+                    t={t}
                   />
                 )}
               </div>
@@ -591,6 +598,7 @@ export default function Header() {
                 setIsSearchOpen(false)
                 setSearchTerm('')
               }}
+              t={t}
             />
           </div>
         </div>
