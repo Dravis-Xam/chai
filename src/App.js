@@ -7,6 +7,8 @@ import Homepage from './home'
 import Shop from './pages/Shop'
 import ProductDetails from './pages/ProductDetails'
 import NotFound from './pages/NotFound'
+import Checkout from './pages/Checkout'
+import PaymentQr from './pages/PaymentQr'
 import Login from './pages/Login'
 import Register from './pages/Register'
 
@@ -21,6 +23,8 @@ function App() {
                 <Route path="/" element={<Homepage />} />
                 <Route path="/shop" element={<Shop />} />
                 <Route path="/product/:id" element={<ProductDetails />} />
+                <Route path="/checkout" element={<Checkout />} />
+                <Route path="/payment-qr" element={<PaymentQr />} />
                 <Route path="/login" element={<Login />} />
                 <Route path="/register" element={<Register />} />
                 <Route path="*" element={<NotFound />} />

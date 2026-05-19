@@ -1,5 +1,6 @@
 import React, { useMemo, useState } from 'react'
 import { useNavigate } from 'react-router'
+import { useCart } from '../hooks/CartContext'
 import Header from '../components/header'
 import Footer from '../components/footer'
 import CartPanel from '../components/panels/CartPanel'
@@ -249,7 +250,7 @@ function CompletionTab({ status, onRetry }) {
       <div className={`mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-full ${isSuccess ? 'bg-emerald-500/10 text-emerald-600' : 'bg-red-500/10 text-red-600'}`}>
         <span className="text-4xl">{isSuccess ? '✓' : '✕'}</span>
       </div>
-      <h2 className="text-2xl font-semibold ${isSuccess ? 'text-gray-900 dark:text-white' : 'text-red-600'}">
+      <h2 className={`text-2xl font-semibold ${isSuccess ? 'text-gray-900 dark:text-white' : 'text-red-600'}`}>
         {isSuccess ? 'Payment completed' : 'Payment failed'}
       </h2>
       <p className="mt-4 text-sm text-gray-600 dark:text-gray-400">
@@ -270,6 +271,7 @@ function CompletionTab({ status, onRetry }) {
 
 export default function Checkout() {
   const navigate = useNavigate()
+  const { getTotal } = useCart()
   const [activeTab, setActiveTab] = useState(1)
   const [checkoutStatus, setCheckoutStatus] = useState(null)
   const [deliveryInfo, setDeliveryInfo] = useState({ location: '', cityTown: '', street: '', contact: '' })
@@ -287,7 +289,11 @@ export default function Checkout() {
   }, [deliveryInfo.cityTown, deliveryInfo.street])
 
   const openPaymentQr = () => {
-    window.open('/payment-qr', '_blank')
+    // Build payment payload from cart total and a reference id
+    const amount = (typeof getTotal === 'function' ? getTotal() : 0).toFixed(2)
+    const ref = `ORDER-${Date.now()}`
+    const url = `${window.location.origin}/payment-qr?amount=${encodeURIComponent(amount)}&ref=${encodeURIComponent(ref)}`
+    window.open(url, '_blank', 'noopener,noreferrer')
   }
 
   return (

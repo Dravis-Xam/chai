@@ -1,8 +1,10 @@
 import React, { useState } from 'react'
+import { useNavigate } from 'react-router'
 import { useCart } from '../../hooks/CartContext'
 
 export default function CartPanel() {
-  const { cartItems, isOpen, setIsOpen, updateQuantity, removeFromCart, clearCart, getTotal } = useCart()
+  const { cartItems, isOpen, setIsOpen, updateQuantity, removeFromCart, clearCart, getTotal, shippingCost } = useCart()
+  const navigate = useNavigate()
   const [isEditMode, setIsEditMode] = useState(false)
   const [selectedItems, setSelectedItems] = useState(new Set())
   const [isMobile, setIsMobile] = useState(window.innerWidth < 768)
@@ -74,6 +76,7 @@ export default function CartPanel() {
   }
 
   const total = getTotal()
+  const itemsTotal = cartItems.reduce((sum, item) => sum + item.price * item.quantity, 0)
   const panelClasses = isMobile
     ? 'fixed bottom-0 left-0 right-0 z-40 max-h-[80vh] rounded-t-3xl'
     : 'fixed top-0 left-0 z-40 h-screen w-full sm:w-[400px] lg:w-[450px]'
@@ -102,10 +105,10 @@ export default function CartPanel() {
         className={`transform transition-all duration-300 ease-out ${
           isOpen
             ? isMobile
-              ? 'translate-y-0 pb-20'
+              ? 'translate-y-0 pb-20 mb-0'
               : 'translate-x-0'
             : isMobile
-            ? 'translate-y-full pb-20'
+            ? 'translate-y-full pb-20 mb-0'
             : '-translate-x-full'
         } ${panelClasses} bg-white dark:bg-gray-950 shadow-2xl flex flex-col overflow-hidden`}
       >
@@ -284,6 +287,14 @@ export default function CartPanel() {
           <div className="border-t border-gray-200 dark:border-gray-800 bg-gray-50 px-6 py-4 space-y-3 dark:bg-gray-900/50">
             <div className="flex justify-between text-sm">
               <span className="text-gray-600 dark:text-gray-400">Subtotal:</span>
+              <span className="font-medium text-gray-900 dark:text-white">Ksh. {itemsTotal.toFixed(2)}</span>
+            </div>
+            <div className="flex justify-between text-sm">
+              <span className="text-gray-600 dark:text-gray-400">Shipping:</span>
+              <span className="font-medium text-gray-900 dark:text-white">Ksh. {(shippingCost || 0).toFixed(2)}</span>
+            </div>
+            <div className="flex justify-between text-sm">
+              <span className="text-gray-600 dark:text-gray-400">Total:</span>
               <span className="font-medium text-gray-900 dark:text-white">Ksh. {total.toFixed(2)}</span>
             </div>
             <div className="flex justify-between text-sm">
@@ -293,7 +304,14 @@ export default function CartPanel() {
               </span>
             </div>
 
-            <button className="w-full rounded-lg bg-amber-500 px-4 py-3 font-medium text-white transition-all hover:bg-amber-600 hover:shadow-lg active:scale-98 flex items-center justify-center gap-2">
+            <button
+              type="button"
+              onClick={() => {
+                setIsOpen(false)
+                navigate('/checkout')
+              }}
+              className="w-full rounded-lg bg-amber-500 px-4 py-3 font-medium text-white transition-all hover:bg-amber-600 hover:shadow-lg active:scale-98 flex items-center justify-center gap-2"
+            >
               Proceed to Checkout
               <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
