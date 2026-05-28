@@ -1,9 +1,11 @@
 import React, { useState } from 'react'
 import { Link } from 'react-router'
-import { useCart } from '../../hooks/CartContext';
+import { useCart } from '../../hooks/CartContext'
+import { useLanguage } from '../../hooks/LanguageContext'
 
 export default function ProductCard({ item }) {
   const [isHovered, setIsHovered] = useState(false);
+  const { t } = useLanguage()
 
   const {
     cartItems,
@@ -70,7 +72,7 @@ export default function ProductCard({ item }) {
               className="flex-1 rounded-lg bg-amber-500 px-4 py-2 text-sm font-medium text-white transition-all duration-300 hover:bg-amber-600 hover:shadow-md active:scale-95"
               onClick={handleAddToCart}
             >
-              Add to Cart
+              {t('product.addToCart')}
             </button>
           ) : (
             <div className="flex items-center justify-between gap-2">
@@ -93,7 +95,7 @@ export default function ProductCard({ item }) {
           )}
           <button 
             className="rounded-lg p-2 text-gray-500 transition-all duration-300 hover:bg-gray-100 hover:text-amber-600 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-amber-500"
-            aria-label="Add to wishlist"
+            aria-label={t('product.addToWishlist')}
             onClick={() => {
               console.log('Added to wishlist:', item.name)
             }}

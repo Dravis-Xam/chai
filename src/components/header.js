@@ -242,7 +242,7 @@ function NotificationsDropdown({ showNotifications, notifications, selectedNotif
   )
 }
 
-function MobileBottomNav({ visibleNavItems, activeNav, setActiveNav, setIsOpen, handleNavClick, cartItems, hoveredNav, setHoveredNav, navRef, buttonRefs, isDarkMode, indicatorStyle }) {
+function MobileBottomNav({ visibleNavItems, activeNav, setActiveNav, setIsOpen, handleNavClick, cartItems, hoveredNav, setHoveredNav, navRef, buttonRefs, isDarkMode, indicatorStyle, lang }) {
   return (
     <div className="fixed bottom-0 left-0 right-0 z-50 pb-4 px-4 pointer-events-none md:hidden">
       <nav
@@ -272,7 +272,7 @@ function MobileBottomNav({ visibleNavItems, activeNav, setActiveNav, setIsOpen, 
                 className={`relative rounded-lg p-3 transition-all duration-200 group ${
                   activeNav === item.href ? 'text-amber-600 dark:text-amber-500' : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'
                 }`}
-                aria-label={t(item.labelKey)}
+                aria-label={lang && lang(item.labelKey)}
               >
                 {item.icon}
                 {item.name === 'Cart' && cartItems.length > 0 && (
@@ -283,7 +283,7 @@ function MobileBottomNav({ visibleNavItems, activeNav, setActiveNav, setIsOpen, 
 
                 {hoveredNav === item.name && (
                   <span className="absolute -top-10 left-1/2 transform -translate-x-1/2 whitespace-nowrap rounded-lg bg-gray-900 dark:bg-gray-800 px-2 py-1 text-xs text-white shadow-lg animate-fadeIn">
-                    {t(item.labelKey)}
+                    {lang && lang(item.labelKey)}
                   </span>
                 )}
               </button>
@@ -398,13 +398,13 @@ export default function Header() {
     })),
     ...sampleItems.map((item) => ({
       label: item.category,
-      subtitle: 'Browse category',
+      subtitle: t('header.browseCategory'),
       type: 'category',
       href: '/shop',
     })),
-    { label: 'Shop', subtitle: 'Browse all products', type: 'section', href: '/shop' },
-    { label: 'Cart', subtitle: 'Go to cart panel', type: 'section', href: '#cart' },
-    ...(isAuthenticated ? [{ label: 'Profile', subtitle: 'Open profile section', type: 'section', href: '#profile' }] : []),
+    { label: t('header.shop'), subtitle: t('header.browseAllProducts'), type: 'section', href: '/shop' },
+    { label: t('header.cart'), subtitle: t('header.goToCartPanel'), type: 'section', href: '#cart' },
+    ...(isAuthenticated ? [{ label: t('header.profile'), subtitle: t('header.openProfileSection'), type: 'section', href: '#profile' }] : []),
   ]
 
   const filteredSearchItems = searchSource.filter((item) =>
@@ -520,7 +520,7 @@ export default function Header() {
                   setShowNotifications(false)
                 }}
                 className="rounded-lg p-2 text-gray-600 dark:text-gray-400 transition-colors hover:bg-gray-100 dark:hover:bg-gray-800"
-                aria-label={isDarkMode ? 'Switch to light mode' : 'Switch to dark mode'}
+                aria-label={isDarkMode ? t('header.switchToLightMode') : t('header.switchToDarkMode')}
               >
                 {isDarkMode ? (
                   <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -584,7 +584,7 @@ export default function Header() {
                 }}
                 className="rounded-full border border-gray-200 bg-white px-4 py-2 text-sm font-medium text-gray-700 transition-colors hover:border-amber-300 hover:bg-amber-50 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-200 dark:hover:border-amber-500 dark:hover:bg-amber-950"
               >
-                {isAuthenticated ? 'Logout' : 'Login'}
+                {isAuthenticated ? t('header.logout') : t('header.login')}
               </button>
             </div>
 
@@ -618,6 +618,7 @@ export default function Header() {
         buttonRefs={buttonRefs}
         isDarkMode={isDarkMode}
         indicatorStyle={indicatorStyle}
+        lang={t}
       />
 
       {/* Add padding at bottom for mobile only */}

@@ -5,8 +5,10 @@ import CartPanel from '../components/panels/CartPanel'
 import ProductCard from '../components/cards/ProductCard'
 import { preloadAsset } from '../utils/preloadImages'
 import { sampleItems } from '../data/products'
+import { useLanguage } from '../hooks/LanguageContext'
 
 export default function Shop() {
+  const { t } = useLanguage()
   const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
@@ -25,9 +27,9 @@ export default function Shop() {
         <section className="bg-white/90 p-6 shadow-sm dark:bg-gray-950/80">
           <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
             <div>
-              <h1 className="text-3xl font-semibold text-gray-900 dark:text-white">Shop</h1>
+              <h1 className="text-3xl font-semibold text-gray-900 dark:text-white">{t('shop.title')}</h1>
               <p className="mt-3 max-w-2xl text-sm text-gray-600 dark:text-gray-300">
-                Discover our full collection of chai blends, loose leaf tea, and accessories.
+                {t('shop.description')}
               </p>
             </div>
           </div>
@@ -36,7 +38,7 @@ export default function Shop() {
               <div className="flex w-full items-center justify-center py-12">
                 <div className="text-center">
                   <div className="mb-4 h-12 w-12 animate-spin rounded-full border-4 border-gray-200 border-t-amber-500 dark:border-gray-800 dark:border-t-amber-400"></div>
-                  <p className="text-sm text-gray-600 dark:text-gray-300">Loading products...</p>
+                  <p className="text-sm text-gray-600 dark:text-gray-300">{t('shop.loadingProducts')}</p>
                 </div>
               </div>
             ) : (

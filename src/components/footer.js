@@ -59,7 +59,7 @@ export default function Footer() {
                 <LanguageSwitcher />
               </div>
               <ul className="space-y-3 text-sm text-gray-600 dark:text-gray-400">
-                <li className="flex items-center gap-2"><svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-amber-500" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path d="M2 5a2 2 0 012-2h12a2 2 0 012 2v.5l-8 5-8-5V5z" /></svg><span>Email:</span> <a className="ml-1 text-amber-600 dark:text-amber-400" href="mailto:info@gacharagetea.co.ke">info@gacharagetea.co.ke</a></li>
+                <li className="flex items-center gap-2"><svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-amber-500" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path d="M2 5a2 2 0 012-2h12a2 2 0 012 2v.5l-8 5-8-5V5z" /></svg><a className="ml-1 text-amber-600 dark:text-amber-400" href="mailto:info@gacharagetea.co.ke">info@gacharagetea.co.ke</a></li>
                 <li className="flex items-center gap-2"><svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-amber-500" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path d="M2.003 5.884l2-3A1 1 0 015 2h3a1 1 0 011 1v3a1 1 0 01-.293.707L8.414 8.414a10.04 10.04 0 004.172 4.172l1.707-1.293A1 1 0 0116 10h3a1 1 0 011 1v3a1 1 0 01-1 1h-.5a12 12 0 01-11.497-11.116z" /></svg><a className="text-amber-600 dark:text-amber-400" href="tel:+254742300580">+254 742 300 580</a></li>
               </ul>
 

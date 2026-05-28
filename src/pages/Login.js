@@ -4,9 +4,11 @@ import Header from '../components/header'
 import Footer from '../components/footer'
 import CartPanel from '../components/panels/CartPanel'
 import { useAuth } from '../hooks/AuthContext'
+import { useLanguage } from '../hooks/LanguageContext'
 
 export default function Login() {
   const { isAuthenticated, login } = useAuth()
+  const { t } = useLanguage()
   const navigate = useNavigate()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -21,7 +23,7 @@ export default function Login() {
   const handleSubmit = (event) => {
     event.preventDefault()
     if (!email || !password) {
-      setError('Please enter your email and password.')
+      setError(t('login.errorEmpty'))
       return
     }
     login({ email, name: email.split('@')[0] || 'Chai Lover' })
@@ -33,8 +35,8 @@ export default function Login() {
       <Header />
       <main className="px-4 py-16 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-3xl rounded-3xl border border-gray-200 bg-white p-8 shadow-sm dark:border-gray-800 dark:bg-gray-950">
-          <h1 className="text-4xl font-semibold text-gray-900 dark:text-white">Login</h1>
-          <p className="mt-4 text-gray-600 dark:text-gray-300">Sign in to access your cart, saved blends, and account settings.</p>
+          <h1 className="text-4xl font-semibold text-gray-900 dark:text-white">{t('login.title')}</h1>
+          <p className="mt-4 text-gray-600 dark:text-gray-300">{t('login.description')}</p>
 
           <form onSubmit={handleSubmit} className="mt-10 space-y-6">
             {error && (
@@ -46,26 +48,26 @@ export default function Login() {
               type="email"
               value={email}
               onChange={(event) => setEmail(event.target.value)}
-              placeholder="Email"
+              placeholder={t('login.emailPlaceholder')}
               className="w-full rounded-3xl border border-gray-200 bg-gray-50 px-5 py-4 text-sm text-gray-900 outline-none transition focus:border-amber-500 focus:ring-2 focus:ring-amber-200 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100"
             />
             <input
               type="password"
               value={password}
               onChange={(event) => setPassword(event.target.value)}
-              placeholder="Password"
+              placeholder={t('login.passwordPlaceholder')}
               className="w-full rounded-3xl border border-gray-200 bg-gray-50 px-5 py-4 text-sm text-gray-900 outline-none transition focus:border-amber-500 focus:ring-2 focus:ring-amber-200 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100"
             />
             <button className="w-full rounded-full bg-amber-500 px-5 py-4 text-sm font-semibold text-white transition hover:bg-amber-600">
-              Continue
+              {t('login.continue')}
             </button>
           </form>
 
           <div className="mt-8 text-sm text-gray-500 dark:text-gray-400">
             <p>
-              Don’t have an account yet?{' '}
+              {t('login.noAccount')}{' '}
               <Link to="/register" className="font-semibold text-amber-600 hover:text-amber-700 dark:text-amber-400 dark:hover:text-amber-300">
-                Create one.
+                {t('login.createAccount')}
               </Link>
             </p>
           </div>

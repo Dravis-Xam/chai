@@ -1,6 +1,7 @@
 import React, { useMemo, useState } from 'react'
 import { useNavigate } from 'react-router'
 import { useCart } from '../hooks/CartContext'
+import { useLanguage } from '../hooks/LanguageContext'
 import Header from '../components/header'
 import Footer from '../components/footer'
 import CartPanel from '../components/panels/CartPanel'
@@ -116,6 +117,7 @@ function PickupTab({ availablePoints }) {
 }
 
 function PaymentTab({ data, setData, selectedMethod, setSelectedMethod, openPaymentQr, setCheckoutStatus }) {
+  const { t } = useLanguage()
   const method = paymentMethods.find((item) => item.id === selectedMethod) || paymentMethods[0]
 
   const handleSubmit = (event) => {
@@ -221,13 +223,13 @@ function PaymentTab({ data, setData, selectedMethod, setSelectedMethod, openPaym
       )}
 
       <div className="flex flex-col gap-3 rounded-3xl border border-gray-200 bg-white p-4 dark:border-gray-800 dark:bg-gray-950">
-        <p className="text-sm text-gray-500 dark:text-gray-400">Need an alternate payment flow?</p>
+        <p className="text-sm text-gray-500 dark:text-gray-400">{t('checkout.paymentTab.alternateFlow')}</p>
         <button
           type="button"
           onClick={openPaymentQr}
           className="inline-flex items-center justify-center rounded-full bg-gray-100 px-4 py-3 text-sm font-semibold text-gray-900 transition hover:bg-gray-200 dark:bg-gray-800 dark:text-gray-100 dark:hover:bg-gray-700"
         >
-          Open QR payment page
+          {t('checkout.paymentTab.openQr')}
         </button>
       </div>
 
@@ -235,17 +237,18 @@ function PaymentTab({ data, setData, selectedMethod, setSelectedMethod, openPaym
         type="submit"
         className="w-full rounded-full bg-amber-500 px-5 py-4 text-sm font-semibold text-white transition hover:bg-amber-600"
       >
-        Confirm payment details
+        {t('checkout.paymentTab.confirmPaymentDetails')}
       </button>
     </form>
   )
 }
 
 function CompletionTab({ status, onRetry }) {
+  const { t } = useLanguage()
   if (!status) {
     return (
       <div className="rounded-3xl border border-dashed border-gray-300 bg-white p-6 text-center dark:border-gray-800 dark:bg-gray-950">
-        <p className="text-sm text-gray-500 dark:text-gray-400">Complete your delivery and payment details to see success or failure status here.</p>
+        <p className="text-sm text-gray-500 dark:text-gray-400">{t('checkout.completion.intro')}</p>
       </div>
     )
   }
@@ -257,10 +260,10 @@ function CompletionTab({ status, onRetry }) {
         <span className="text-4xl">{isSuccess ? '✓' : '✕'}</span>
       </div>
       <h2 className={`text-2xl font-semibold ${isSuccess ? 'text-gray-900 dark:text-white' : 'text-red-600'}`}>
-        {isSuccess ? 'Payment completed' : 'Payment failed'}
+        {isSuccess ? t('checkout.completion.successTitle') : t('checkout.completion.errorTitle')}
       </h2>
       <p className="mt-4 text-sm text-gray-600 dark:text-gray-400">
-        {isSuccess ? 'Your order is confirmed and will be ready for pickup soon.' : 'There was a problem processing your payment. Please review your details and try again.'}
+        {isSuccess ? t('checkout.completion.successCopy') : t('checkout.completion.errorCopy')}
       </p>
       {!isSuccess && (
         <button
@@ -268,7 +271,7 @@ function CompletionTab({ status, onRetry }) {
           onClick={onRetry}
           className="mt-6 inline-flex items-center justify-center rounded-full bg-amber-500 px-5 py-3 text-sm font-semibold text-white transition hover:bg-amber-600"
         >
-          Retry payment
+          {t('checkout.completion.retry')}
         </button>
       )}
     </div>
@@ -277,6 +280,7 @@ function CompletionTab({ status, onRetry }) {
 
 export default function Checkout() {
   const navigate = useNavigate()
+  const { t } = useLanguage()
   const { getTotal } = useCart()
   const [activeTab, setActiveTab] = useState(1)
   const [checkoutStatus, setCheckoutStatus] = useState(null)
@@ -308,9 +312,9 @@ export default function Checkout() {
       <main className="mx-auto w-full max-w-7xl px-3 py-6 sm:px-6 sm:py-12 lg:px-8">
         <div className="mb-6 flex flex-col gap-3 lg:mb-8 lg:gap-4 lg:flex-row lg:items-center lg:justify-between">
           <div>
-            <h1 className="text-2xl font-semibold tracking-tight text-gray-900 sm:text-3xl lg:text-4xl dark:text-white">Checkout</h1>
+            <h1 className="text-2xl font-semibold tracking-tight text-gray-900 sm:text-3xl lg:text-4xl dark:text-white">{t('checkout.title')}</h1>
             <p className="mt-2 max-w-2xl text-xs sm:text-sm text-gray-600 dark:text-gray-400">
-              Complete your order with delivery details, payment method selection, and final confirmation.
+              {t('checkout.description')}
             </p>
           </div>
           <button
@@ -318,7 +322,7 @@ export default function Checkout() {
             onClick={() => navigate('/')}
             className="inline-flex items-center justify-center rounded-full border border-gray-200 bg-white px-5 py-3 text-sm font-semibold text-gray-700 transition hover:border-amber-300 hover:bg-amber-50 dark:border-gray-800 dark:bg-gray-900 dark:text-gray-200 dark:hover:border-amber-500 dark:hover:bg-amber-950"
           >
-            Back to shop
+            {t('checkout.backToShop')}
           </button>
         </div>
 
@@ -334,10 +338,10 @@ export default function Checkout() {
                     className={`flex-shrink-0 min-w-[5.5rem] sm:min-w-[7rem] rounded-full px-3 sm:px-4 py-2 sm:py-3 text-[11px] sm:text-sm font-semibold transition ${activeTab === tab ? 'bg-amber-500 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700'}`}
                   >
                     <span className="hidden sm:inline">
-                      {tab === 1 ? 'Delivery info' : tab === 2 ? 'Pickup point' : tab === 3 ? 'Payment info' : 'Confirmation'}
+                      {tab === 1 ? t('checkout.tabs.delivery') : tab === 2 ? t('checkout.tabs.pickup') : tab === 3 ? t('checkout.tabs.payment') : t('checkout.tabs.confirmation')}
                     </span>
                     <span className="sm:hidden">
-                      {tab === 1 ? 'Delivery' : tab === 2 ? 'Pickup' : tab === 3 ? 'Payment' : 'Confirm'}
+                      {tab === 1 ? t('checkout.tabs.deliveryShort') : tab === 2 ? t('checkout.tabs.pickupShort') : tab === 3 ? t('checkout.tabs.paymentShort') : t('checkout.tabs.confirmationShort')}
                     </span>
                   </button>
                 ))}
@@ -364,7 +368,7 @@ export default function Checkout() {
                   onClick={() => setActiveTab(activeTab - 1)}
                   className="flex-1 rounded-full border border-gray-200 bg-white px-3 sm:px-4 py-2 sm:py-3 text-xs sm:text-sm font-semibold text-gray-700 transition hover:bg-gray-100 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-200 dark:hover:bg-gray-800"
                 >
-                  Back
+                  {t('checkout.buttons.back')}
                 </button>
               )}
               {activeTab < 4 && (
@@ -373,7 +377,7 @@ export default function Checkout() {
                   onClick={() => setActiveTab(activeTab + 1)}
                   className="flex-1 rounded-full bg-amber-500 px-3 sm:px-4 py-2 sm:py-3 text-xs sm:text-sm font-semibold text-white transition hover:bg-amber-600"
                 >
-                  {activeTab === 3 ? 'Complete' : 'Next'}
+                  {activeTab === 3 ? t('checkout.buttons.complete') : t('checkout.buttons.next')}
                 </button>
               )}
             </div>
@@ -381,24 +385,24 @@ export default function Checkout() {
 
           <aside className="hidden lg:block space-y-6 rounded-[2rem] border border-gray-200 bg-gray-50 p-6 dark:border-gray-800 dark:bg-gray-900/80">
             <div className="rounded-3xl bg-white p-5 shadow-sm dark:bg-gray-950">
-              <p className="text-xs uppercase tracking-[0.3em] text-amber-600">Order summary</p>
-              <h2 className="mt-4 text-lg font-semibold text-gray-900 dark:text-white">Review your checkout</h2>
-              <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">Use the tabs to complete delivery, choose a payment method, and get confirmation.</p>
+              <p className="text-xs uppercase tracking-[0.3em] text-amber-600">{t('checkout.section.orderSummary')}</p>
+              <h2 className="mt-4 text-lg font-semibold text-gray-900 dark:text-white">{t('checkout.section.reviewCheckout')}</h2>
+              <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">{t('checkout.section.reviewCopy')}</p>
             </div>
 
             <div className="space-y-4 rounded-3xl border border-gray-200 bg-white p-5 shadow-sm dark:border-gray-800 dark:bg-gray-950">
               <div>
-                <p className="text-sm font-semibold text-gray-900 dark:text-white">Delivery address</p>
-                <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">{deliveryInfo.location || 'Location not entered'}</p>
-                <p className="text-sm text-gray-600 dark:text-gray-400">{deliveryInfo.cityTown || 'City/Town not entered'}</p>
-                <p className="text-sm text-gray-600 dark:text-gray-400">{deliveryInfo.street || 'Street not entered'}</p>
-                <p className="mt-1 text-sm font-medium text-amber-600 dark:text-amber-300">Contact: {deliveryInfo.contact || 'Not provided'}</p>
+                <p className="text-sm font-semibold text-gray-900 dark:text-white">{t('checkout.section.deliveryAddress')}</p>
+                <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">{deliveryInfo.location || t('checkout.summary.locationNotEntered')}</p>
+                <p className="text-sm text-gray-600 dark:text-gray-400">{deliveryInfo.cityTown || t('checkout.summary.cityNotEntered')}</p>
+                <p className="text-sm text-gray-600 dark:text-gray-400">{deliveryInfo.street || t('checkout.summary.streetNotEntered')}</p>
+                <p className="mt-1 text-sm font-medium text-amber-600 dark:text-amber-300">{t('checkout.summary.contactLabel')} {deliveryInfo.contact || t('checkout.summary.notProvided')}</p>
               </div>
 
               <div className="rounded-3xl bg-amber-50 p-4 dark:bg-amber-500/10">
-                <p className="text-sm font-semibold text-amber-700 dark:text-amber-200">Payment</p>
+                <p className="text-sm font-semibold text-amber-700 dark:text-amber-200">{t('checkout.section.payment')}</p>
                 <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">{paymentMethods.find((method) => method.id === selectedMethod)?.label}</p>
-                <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">{selectedMethod === 'creditcard' ? 'Credit card details' : selectedMethod === 'paypal' || selectedMethod === 'stripe' ? 'Email payment' : 'Mobile money payment'}</p>
+                <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">{selectedMethod === 'creditcard' ? t('checkout.summary.creditCardDetails') : selectedMethod === 'paypal' || selectedMethod === 'stripe' ? t('checkout.summary.emailPayment') : t('checkout.summary.mobileMoneyPayment')}</p>
               </div>
             </div>
 
@@ -407,7 +411,7 @@ export default function Checkout() {
               onClick={() => setActiveTab(4)}
               className="w-full rounded-full bg-amber-500 px-5 py-4 text-sm font-semibold text-white transition hover:bg-amber-600"
             >
-              View confirmation
+              {t('checkout.buttons.viewConfirmation')}
             </button>
           </aside>
         </div>

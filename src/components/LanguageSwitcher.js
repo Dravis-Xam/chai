@@ -5,9 +5,11 @@ export default function LanguageSwitcher() {
   const { language, languages, switchLanguage } = useLanguage()
   const [isOpen, setIsOpen] = useState(false)
   const currentLang = languages.find((lang) => lang.code === language) || languages[0]
+  const m = null // Hide the language switcher for now, as we only have English. This will be enabled once we add more languages in the future. 
 
   return (
-    <div className="relative">
+    <>
+    {m && <div className="relative">
       <button
         type="button"
         onClick={() => setIsOpen(!isOpen)}
@@ -48,6 +50,7 @@ export default function LanguageSwitcher() {
           </ul>
         </div>
       )}
-    </div>
+    </div>}
+    </>
   )
 }

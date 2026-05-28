@@ -5,10 +5,12 @@ import { findProduct } from '../data/products'
 import Header from '../components/header'
 import Footer from '../components/footer'
 import CartPanel from '../components/panels/CartPanel'
+import { useLanguage } from '../hooks/LanguageContext'
 
 export default function ProductDetails() {
   const { id } = useParams()
   const product = findProduct(id)
+  const { t } = useLanguage()
   const { addToCart, cartItems, updateQuantity } = useCart()
 
   if (!product) {
@@ -17,10 +19,10 @@ export default function ProductDetails() {
         <Header />
         <main className="px-4 py-16 sm:px-6 lg:px-8">
           <div className="mx-auto max-w-3xl rounded-3xl border border-gray-200 bg-white p-8 shadow-sm dark:border-gray-800 dark:bg-gray-950">
-            <h1 className="text-3xl font-semibold">Product not found</h1>
-            <p className="mt-4 text-gray-600 dark:text-gray-300">We couldn’t find that product. Try browsing the shop instead.</p>
+            <h1 className="text-3xl font-semibold">{t('product.notFoundTitle')}</h1>
+            <p className="mt-4 text-gray-600 dark:text-gray-300">{t('product.notFoundCopy')}</p>
             <Link to="/shop" className="mt-6 inline-flex rounded-full bg-amber-500 px-5 py-3 text-sm font-semibold text-white hover:bg-amber-600">
-              Back to Shop
+              {t('product.backToShop')}
             </Link>
           </div>
         </main>
@@ -56,7 +58,7 @@ export default function ProductDetails() {
                     onClick={() => addToCart(product)}
                     className="rounded-full bg-amber-500 px-5 py-3 text-sm font-semibold text-white transition hover:bg-amber-600"
                   >
-                    Add to Cart
+                    {t('product.addToCart')}
                   </button>}
                   {quantity !== 0 && <><button
                     onClick={() => updateQuantity(product.id, Math.max(quantity - 1, 0))}
@@ -77,25 +79,25 @@ export default function ProductDetails() {
 
             <aside className="space-y-6 rounded-3xl border border-gray-200 bg-gray-50 p-6 dark:border-gray-800 dark:bg-gray-900/80 lg:sticky lg:top-24">
               <div>
-                <h2 className="text-xl font-semibold text-gray-900 dark:text-white">Product details</h2>
-                <p className="mt-3 text-sm text-gray-600 dark:text-gray-300">Use this page to explore the product and add it to your cart before checkout.</p>
+                <h2 className="text-xl font-semibold text-gray-900 dark:text-white">{t('product.detailsTitle')}</h2>
+                <p className="mt-3 text-sm text-gray-600 dark:text-gray-300">{t('product.detailsCopy')}</p>
               </div>
               <div className="space-y-2 text-sm text-gray-600 dark:text-gray-300">
                 <div className="flex justify-between">
-                  <span>Category</span>
+                  <span>{t('product.category')}</span>
                   <span>{product.category}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span>Stock</span>
+                  <span>{t('product.stock')}</span>
                   <span>{product.amountRemaining}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span>Price</span>
+                  <span>{t('product.price')}</span>
                   <span>Ksh. {product.price.toFixed(2)}</span>
                 </div>
               </div>
               <Link to="/shop" className="inline-flex w-full items-center justify-center rounded-full bg-white px-4 py-3 text-sm font-semibold text-gray-900 shadow-sm hover:bg-gray-100 dark:bg-gray-800 dark:text-white dark:hover:bg-gray-700">
-                Back to Shop
+                {t('product.backToShop')}
               </Link>
             </aside>
           </div>

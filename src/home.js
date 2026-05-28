@@ -5,8 +5,10 @@ import CartPanel from "./components/panels/CartPanel"
 import FeaturedSlider from "./components/FeaturedSlider"
 import { preloadAsset } from "./utils/preloadImages"
 import { sampleItems } from "./data/products"
+import { useLanguage } from "./hooks/LanguageContext"
 
 export default function Homepage() {
+  const { t } = useLanguage()
   const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
@@ -34,16 +36,16 @@ export default function Homepage() {
         )}
 
         <section id="cart" className="rounded-3xl bg-white/90 p-6 shadow-sm dark:bg-gray-950/80">
-          <h2 className="text-2xl font-semibold tracking-tight text-gray-900 dark:text-white">Cart</h2>
+          <h2 className="text-2xl font-semibold tracking-tight text-gray-900 dark:text-white">{t('homepage.cartHeading')}</h2>
           <p className="mt-3 max-w-2xl text-sm text-gray-600 dark:text-gray-300">
-            Your cart is ready for checkout. Add your favorite teas and accessories, then head to checkout when you are ready.
+            {t('homepage.cartDescription')}
           </p>
         </section>
 
         <section id="profile" className="rounded-3xl bg-white/90 p-6 shadow-sm dark:bg-gray-950/80">
-          <h2 className="text-2xl font-semibold tracking-tight text-gray-900 dark:text-white">Profile</h2>
+          <h2 className="text-2xl font-semibold tracking-tight text-gray-900 dark:text-white">{t('homepage.profileHeading')}</h2>
           <p className="mt-3 max-w-2xl text-sm text-gray-600 dark:text-gray-300">
-            Manage your preferences, saved blends, and delivery details from your profile section.
+            {t('homepage.profileDescription')}
           </p>
         </section>
       </main>

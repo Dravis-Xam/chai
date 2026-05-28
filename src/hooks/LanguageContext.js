@@ -76,6 +76,57 @@ const translations = {
       description: 'Discover our full collection of chai blends, loose leaf tea, and accessories.',
       loadingProducts: 'Loading products...',
     },
+    checkout: {
+      title: 'Checkout',
+      description: 'Complete your order with delivery details, payment method selection, and final confirmation.',
+      backToShop: 'Back to shop',
+      tabs: {
+        delivery: 'Delivery info',
+        pickup: 'Pickup point',
+        payment: 'Payment info',
+        confirmation: 'Confirmation',
+        deliveryShort: 'Delivery',
+        pickupShort: 'Pickup',
+        paymentShort: 'Payment',
+        confirmationShort: 'Confirm',
+      },
+      section: {
+        orderSummary: 'Order summary',
+        reviewCheckout: 'Review your checkout',
+        reviewCopy: 'Use the tabs to complete delivery, choose a payment method, and get confirmation.',
+        deliveryAddress: 'Delivery address',
+        payment: 'Payment',
+      },
+      summary: {
+        locationNotEntered: 'Location not entered',
+        cityNotEntered: 'City/Town not entered',
+        streetNotEntered: 'Street not entered',
+        contactLabel: 'Contact:',
+        notProvided: 'Not provided',
+        creditCardDetails: 'Credit card details',
+        emailPayment: 'Email payment',
+        mobileMoneyPayment: 'Mobile money payment',
+      },
+      buttons: {
+        back: 'Back',
+        next: 'Next',
+        complete: 'Complete',
+        viewConfirmation: 'View confirmation',
+      },
+      paymentTab: {
+        alternateFlow: 'Need an alternate payment flow?',
+        openQr: 'Open QR payment page',
+        confirmPaymentDetails: 'Confirm payment details',
+      },
+      completion: {
+        intro: 'Complete your delivery and payment details to see success or failure status here.',
+        successTitle: 'Payment completed',
+        errorTitle: 'Payment failed',
+        successCopy: 'Your order is confirmed and will be ready for pickup soon.',
+        errorCopy: 'There was a problem processing your payment. Please review your details and try again.',
+        retry: 'Retry payment',
+      },
+    },
     product: {
       notFoundTitle: 'Product not found',
       notFoundCopy: 'We couldn’t find that product. Try browsing the shop instead.',
@@ -626,4 +677,9 @@ export const LanguageProvider = ({ children }) => {
       {children}
     </LanguageContext.Provider>
   )
+}
+
+export const withLanguage = (Component) => (props) => {
+  const languageContext = useLanguage()
+  return <Component {...props} language={languageContext} />
 }
