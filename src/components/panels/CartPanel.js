@@ -98,7 +98,7 @@ export default function CartPanel() {
           }}
           role="button"
           tabIndex={0}
-          aria-label={t('closeCart')}
+          aria-label={t && t('Close Cart')}
         />
       )}
 
@@ -123,7 +123,7 @@ export default function CartPanel() {
                 setSelectedItems(new Set())
               }}
               className="rounded-lg p-2 text-gray-600 dark:text-gray-400 transition-colors hover:bg-gray-100 dark:hover:bg-gray-800"
-              aria-label={t && t('closeCart')}
+              aria-label={t && t('Close Cart')}
             >
               <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -141,7 +141,7 @@ export default function CartPanel() {
                   <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                   </svg>
-                  {t && t('editCart')}
+                  {t && t('Edit Cart')}
                 </button>
 
                 <button
@@ -151,7 +151,7 @@ export default function CartPanel() {
                   <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 13h6m2 0a2 2 0 002-2V7a2 2 0 00-2-2h-3.5l-1-1h-5l-1 1H5a2 2 0 00-2 2v4a2 2 0 002 2h14z" />
                   </svg>
-                  {t &&t('clearAll')}
+                  {t &&t('Clear All')}
                 </button>
               </>
             ) : (
@@ -167,7 +167,7 @@ export default function CartPanel() {
                   <svg className="h-4 w-4" fill="currentColor" viewBox="0 0 20 20">
                     <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                   </svg>
-                  {t && t('selectAll')}
+                  {t && t('Select All')}
                 </button>
 
                 {selectedItems.size > 0 && (
@@ -179,7 +179,7 @@ export default function CartPanel() {
                       <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                       </svg>
-                      {t && t('deleteSelected')}
+                      {t && t('Delete Selected')}
                     </button>
 
                     <button
@@ -189,7 +189,7 @@ export default function CartPanel() {
                       <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.684 13.342C9.589 12.938 10 12.006 10 11c0-1.105-.895-2-2-2s-2 .895-2 2c0 1.006.411 1.938 1.316 2.342m9.368-6.026a10 10 0 10-14.106 12.754m4.736-2.569a2 2 0 11-2.828 2.828m9.368-6.183a10.003 10.003 0 01-14.106 12.754" />
                       </svg>
-                      {t && t('share')}
+                      {t && t('Share')}
                     </button>
                   </>
                 )}
@@ -201,7 +201,7 @@ export default function CartPanel() {
                   }}
                   className="flex flex-1 items-center justify-center gap-2 rounded-lg bg-gray-100 px-4 py-2 text-sm font-medium text-gray-700 transition-all hover:bg-gray-200 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700"
                 >
-                  {t && t('done')}
+                  {t && t('Done')}
                 </button>
               </>
             )}
@@ -214,8 +214,8 @@ export default function CartPanel() {
               <svg className="mb-4 h-16 w-16 text-gray-400 dark:text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
               </svg>
-              <p className="text-sm text-gray-600 dark:text-gray-400">{t('emptyCart')}</p>
-              <p className="mt-1 text-xs text-gray-500 dark:text-gray-500">{t('emptyCartSubtext')}</p>
+              <p className="text-sm text-gray-600 dark:text-gray-400">{t && t('emptyCart')}</p>
+              <p className="mt-1 text-xs text-gray-500 dark:text-gray-500">{t && t('emptyCartSubtext')}</p>
             </div>
           ) : (
             <div className="space-y-3">
@@ -244,7 +244,7 @@ export default function CartPanel() {
                     <button
                       onClick={() => updateQuantity(item.id, item.quantity - 1)}
                       className="rounded p-1 text-gray-600 transition-colors hover:bg-gray-100 hover:text-gray-900 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-white"
-                      aria-label={t('decreaseQuantity')}
+                      aria-label={t && t('Decrease Quantity')}
                     >
                       <svg className="h-4 w-4" fill="currentColor" viewBox="0 0 20 20">
                         <path fillRule="evenodd" d="M3 10a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clipRule="evenodd" />
@@ -256,7 +256,7 @@ export default function CartPanel() {
                     <button
                       onClick={() => updateQuantity(item.id, item.quantity + 1)}
                       className="rounded p-1 text-gray-600 transition-colors hover:bg-gray-100 hover:text-gray-900 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-white"
-                      aria-label={t('increaseQuantity')}
+                      aria-label={t && t('Increase Quantity')}
                     >
                       <svg className="h-4 w-4" fill="currentColor" viewBox="0 0 20 20">
                         <path fillRule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clipRule="evenodd" />
@@ -266,7 +266,7 @@ export default function CartPanel() {
                     <button
                       onClick={() => removeFromCart(item.id)}
                       className="rounded p-1 text-red-600 transition-colors hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-900/30"
-                      aria-label={t && t('removeItem')}
+                      aria-label={t && t('Remove Item')}
                     >
                       <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -308,7 +308,7 @@ export default function CartPanel() {
               }}
               className="w-full rounded-lg bg-amber-500 px-4 py-3 font-medium text-white transition-all hover:bg-amber-600 hover:shadow-lg active:scale-98 flex items-center justify-center gap-2"
             >
-              {t('proceedToCheckout')}
+              {t('Proceed To Checkout')}
               <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
               </svg>
