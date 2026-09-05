@@ -70,7 +70,7 @@ function DeliveryTab({ data, setData, availablePoints }) {
   )
 }
 
-function PickupTab({ availablePoints }) {
+function PickupTab({ availablePoints, selectedPickupPoint, setSelectedPickupPoint }) {
   return (
     <div className="space-y-6">
       <div className="rounded-3xl border border-gray-200 bg-gray-50 p-5 dark:border-gray-800 dark:bg-gray-900/70">
@@ -102,11 +102,19 @@ function PickupTab({ availablePoints }) {
               </div>
             ) : (
               availablePoints.map((point) => (
-                <div key={point.id} className="rounded-3xl border border-gray-200 bg-white p-4 shadow-sm dark:border-gray-800 dark:bg-gray-950">
+                <label key={point.id} className={`block cursor-pointer rounded-3xl border p-4 shadow-sm transition ${selectedPickupPoint === point.id ? 'border-amber-500 bg-amber-50 dark:border-amber-500 dark:bg-amber-500/10' : 'border-gray-200 bg-white dark:border-gray-800 dark:bg-gray-950'}`}>
+                  <input
+                    type="radio"
+                    name="pickupPoint"
+                    value={point.id}
+                    checked={selectedPickupPoint === point.id}
+                    onChange={() => setSelectedPickupPoint(point.id)}
+                    className="sr-only"
+                  />
                   <p className="font-semibold text-gray-900 dark:text-white">{point.label}</p>
                   <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">{point.description}</p>
                   <p className="mt-3 text-xs uppercase tracking-[0.18em] text-amber-600 dark:text-amber-300">{point.city} · {point.street}</p>
-                </div>
+                </label>
               ))
             )}
           </div>
@@ -116,7 +124,7 @@ function PickupTab({ availablePoints }) {
   )
 }
 
-function PaymentTab({ data, setData, selectedMethod, setSelectedMethod, openPaymentQr, setCheckoutStatus }) {
+function PaymentTab({ data, setData, selectedMethod, setSelectedMethod, openPaymentQr, setCheckoutStatus, onPaymentSuccess }) {
   const { t } = useLanguage()
   const method = paymentMethods.find((item) => item.id === selectedMethod) || paymentMethods[0]
 
@@ -135,6 +143,7 @@ function PaymentTab({ data, setData, selectedMethod, setSelectedMethod, openPaym
       return
     }
     setCheckoutStatus('success')
+    onPaymentSuccess()
   }
 
   return (
@@ -287,6 +296,43 @@ export default function Checkout() {
   const [deliveryInfo, setDeliveryInfo] = useState({ location: '', cityTown: '', street: '', contact: '' })
   const [paymentInfo, setPaymentInfo] = useState({ paymentPhone: '', paymentEmail: '', cardName: '', cardNumber: '', cardExpiry: '', cardCvc: '' })
   const [selectedMethod, setSelectedMethod] = useState('mpesa')
+  const [selectedPickupPoint, setSelectedPickupPoint] = useState(null)
+  const [checkoutError, setCheckoutError] = useState('')
+
+  const validateDelivery = () => {
+    const requiredFields = [deliveryInfo.location, deliveryInfo.cityTown, deliveryInfo.street, deliveryInfo.contact]
+    if (requiredFields.some((field) => !field.trim())) {
+      return 'Enter your delivery location, city, street, and contact phone.'
+    }
+    if (!/^\+?[0-9\s-]{7,15}$/.test(deliveryInfo.contact.trim())) {
+      return 'Enter a valid contact phone number.'
+    }
+    return ''
+  }
+
+  const handleNext = () => {
+    setCheckoutError('')
+    if (activeTab === 1) {
+      const error = validateDelivery()
+      if (error) {
+        setCheckoutError(error)
+        return
+      }
+    }
+    if (activeTab === 2 && !selectedPickupPoint) {
+      setCheckoutError('Select a pickup point before continuing.')
+      return
+    }
+    if (activeTab === 3) {
+      if (checkoutStatus !== 'success') {
+        setCheckoutError('Confirm your payment details before continuing.')
+        return
+      }
+      setActiveTab(4)
+      return
+    }
+    setActiveTab(activeTab + 1)
+  }
 
   const availablePoints = useMemo(() => {
     const cityValue = deliveryInfo.cityTown.trim().toLowerCase()
@@ -349,14 +395,19 @@ export default function Checkout() {
             </div>
 
             <div>
+              {checkoutError && (
+                <div className="mb-4 rounded-3xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700 dark:border-red-900/60 dark:bg-red-950/30 dark:text-red-300" role="alert">
+                  {checkoutError}
+                </div>
+              )}
               {activeTab === 1 && (
                 <DeliveryTab data={deliveryInfo} setData={setDeliveryInfo} availablePoints={availablePoints} />
               )}
               {activeTab === 2 && (
-                <PickupTab availablePoints={availablePoints} />
+                <PickupTab availablePoints={availablePoints} selectedPickupPoint={selectedPickupPoint} setSelectedPickupPoint={setSelectedPickupPoint} />
               )}
               {activeTab === 3 && (
-                <PaymentTab data={paymentInfo} setData={setPaymentInfo} selectedMethod={selectedMethod} setSelectedMethod={setSelectedMethod} openPaymentQr={openPaymentQr} setCheckoutStatus={setCheckoutStatus} />
+                <PaymentTab data={paymentInfo} setData={setPaymentInfo} selectedMethod={selectedMethod} setSelectedMethod={setSelectedMethod} openPaymentQr={openPaymentQr} setCheckoutStatus={setCheckoutStatus} onPaymentSuccess={() => setActiveTab(4)} />
               )}
               {activeTab === 4 && <CompletionTab status={checkoutStatus} onRetry={() => setActiveTab(3)} />}
             </div>
@@ -374,7 +425,7 @@ export default function Checkout() {
               {activeTab < 4 && (
                 <button
                   type="button"
-                  onClick={() => setActiveTab(activeTab + 1)}
+                  onClick={handleNext}
                   className="flex-1 rounded-full bg-amber-500 px-3 sm:px-4 py-2 sm:py-3 text-xs sm:text-sm font-semibold text-white transition hover:bg-amber-600"
                 >
                   {activeTab === 3 ? t('checkout.buttons.complete') : t('checkout.buttons.next')}

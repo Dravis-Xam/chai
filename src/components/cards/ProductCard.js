@@ -2,10 +2,12 @@ import React, { useState } from 'react'
 import { Link } from 'react-router'
 import { useCart } from '../../hooks/CartContext'
 import { useLanguage } from '../../hooks/LanguageContext'
+import { useWishlist } from '../../hooks/WishlistContext'
 
 export default function ProductCard({ item }) {
   const [isHovered, setIsHovered] = useState(false);
   const { t } = useLanguage()
+  const { isInWishlist, toggleWishlist } = useWishlist()
 
   const {
     cartItems,
@@ -15,6 +17,7 @@ export default function ProductCard({ item }) {
 
   const cartEntry = cartItems.find((entry) => entry.id === item.id)
   const count = cartEntry ? cartEntry.quantity : 0
+  const isWishlisted = isInWishlist(item.id)
 
   const handleAddToCart = () => {
     addToCart(item);
@@ -94,13 +97,13 @@ export default function ProductCard({ item }) {
             </div>
           )}
           <button 
-            className="rounded-lg p-2 text-gray-500 transition-all duration-300 hover:bg-gray-100 hover:text-amber-600 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-amber-500"
+            type="button"
+            className={`rounded-lg p-2 transition-all duration-300 hover:bg-gray-100 dark:hover:bg-gray-800 ${isWishlisted ? 'text-amber-600 dark:text-amber-500' : 'text-gray-500 dark:text-gray-400'}`}
             aria-label={t('product.addToWishlist')}
-            onClick={() => {
-              console.log('Added to wishlist:', item.name)
-            }}
+            aria-pressed={isWishlisted}
+            onClick={() => toggleWishlist(item)}
           >
-            <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className="h-5 w-5" fill={isWishlisted ? 'currentColor' : 'none'} stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
             </svg>
           </button>

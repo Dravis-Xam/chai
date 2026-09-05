@@ -22,11 +22,20 @@ export default function Login() {
 
   const handleSubmit = (event) => {
     event.preventDefault()
-    if (!email || !password) {
+    const normalizedEmail = email.trim().toLowerCase()
+    if (!normalizedEmail || !password) {
       setError(t('login.errorEmpty'))
       return
     }
-    login({ email, name: email.split('@')[0] || 'Chai Lover' })
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(normalizedEmail)) {
+      setError('Enter a valid email address.')
+      return
+    }
+    if (password.length < 8) {
+      setError('Password must be at least 8 characters.')
+      return
+    }
+    login({ email: normalizedEmail, name: normalizedEmail.split('@')[0] || 'Chai Lover' })
     navigate('/')
   }
 
@@ -46,6 +55,7 @@ export default function Login() {
             )}
             <input
               type="email"
+              required
               value={email}
               onChange={(event) => setEmail(event.target.value)}
               placeholder={t('login.emailPlaceholder')}
@@ -53,6 +63,8 @@ export default function Login() {
             />
             <input
               type="password"
+              required
+              minLength={8}
               value={password}
               onChange={(event) => setPassword(event.target.value)}
               placeholder={t('login.passwordPlaceholder')}

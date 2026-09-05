@@ -23,11 +23,21 @@ export default function Register() {
 
   const handleSubmit = (event) => {
     event.preventDefault()
-    if (!email || !password) {
+    const normalizedEmail = email.trim().toLowerCase()
+    const normalizedName = name.trim()
+    if (!normalizedEmail || !password || !normalizedName) {
       setError(t('register.errorEmpty'))
       return
     }
-    register({ email, name })
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(normalizedEmail)) {
+      setError('Enter a valid email address.')
+      return
+    }
+    if (password.length < 8) {
+      setError('Password must be at least 8 characters.')
+      return
+    }
+    register({ email: normalizedEmail, name: normalizedName })
     navigate('/')
   }
 
@@ -47,6 +57,7 @@ export default function Register() {
             )}
             <input
               type="text"
+              required
               value={name}
               onChange={(event) => setName(event.target.value)}
               placeholder={t('register.fullNamePlaceholder')}
@@ -54,6 +65,7 @@ export default function Register() {
             />
             <input
               type="email"
+              required
               value={email}
               onChange={(event) => setEmail(event.target.value)}
               placeholder={t('register.emailPlaceholder')}
@@ -61,6 +73,8 @@ export default function Register() {
             />
             <input
               type="password"
+              required
+              minLength={8}
               value={password}
               onChange={(event) => setPassword(event.target.value)}
               placeholder={t('register.passwordPlaceholder')}
